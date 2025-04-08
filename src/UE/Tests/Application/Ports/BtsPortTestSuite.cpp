@@ -22,15 +22,18 @@ protected:
     StrictMock<IBtsEventsHandlerMock> handlerMock;
     StrictMock<common::ITransportMock> transportMock;
     common::ITransport::MessageCallback messageCallback;
-
-    common::ITransport::MessageCallback disconnectedCallback;
+    common::ITransport::DisconnectedCallback disconnectedCallback;
 
     BtsPort objectUnderTest{loggerMock, transportMock, PHONE_NUMBER};
+
 
     BtsPortTestSuite()
     {
         EXPECT_CALL(transportMock, registerMessageCallback(_))
                 .WillOnce(SaveArg<0>(&messageCallback));
+
+        EXPECT_CALL(transportMock, registerDisconnectedCallback(_))
+                .WillOnce(SaveArg<0>(&disconnectedCallback));
 
         objectUnderTest.start(handlerMock);
 
