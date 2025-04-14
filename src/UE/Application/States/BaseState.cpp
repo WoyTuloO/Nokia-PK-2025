@@ -38,8 +38,16 @@ void BaseState::handleDisconnected(){
     logger.logError("Unexpected: handleDisconnected");
 }
 
-void BaseState::handleSmsReceive(common::PhoneNumber sender, std::string text){
-    logger.logError("Unexpected: handleSmsReceive() from: ", sender, " content: ", text);
+void BaseState::handleMessageReceive(common::PhoneNumber sender, std::string text){
+    logger.logError("Unexpected: handleMessageReceive() from: ", sender, " content: ", text);
+}
+
+void BaseState::handleUiAction(std::optional<std::size_t> selectedIdx){
+    logger.logError("Unexpected: handleUiAction(), index: ", (selectedIdx.has_value() ? std::to_string(selectedIdx.value()) : "none"));
+}
+
+void BaseState::handleUiBack(){
+    logger.logError("Unexpected: handleUiBack()");
 }
 
 }

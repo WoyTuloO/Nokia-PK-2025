@@ -23,7 +23,10 @@ public:
 
     void handleDisconnected() override;
 
-    void handleSmsReceive(common::PhoneNumber sender, std::string text) override;
+    void handleMessageReceive(common::PhoneNumber sender, std::string text) override;
+    void handleUiAction(std::optional<std::size_t> selectedIdx) override;
+    void handleUiBack() override;
+
 
 protected:
     Context& context;

@@ -1,6 +1,8 @@
 #include "Application.hpp"
 #include "States/NotConnectedState.hpp"
 
+#include "States/ConnectedState.hpp"
+
 namespace ue
 {
 
@@ -45,9 +47,19 @@ void Application::handleDisconnected(){
     context.state->handleDisconnected();
 }
 
-void Application::handleSmsReceive( common::PhoneNumber sender, std::string text){
+void Application::handleMessageReceive( common::PhoneNumber sender, std::string text){
     logger.logInfo("SMS received, sender: ", sender);
-    context.state->handleSmsReceive(sender, text);
+    context.state->handleMessageReceive(sender, text);
 }
+
+void Application::handleUiAction(std::optional<std::size_t> selectedIndex){
+    context.state->handleUiAction(selectedIndex);
+}
+
+void Application::handleUiBack(){
+    context.state->handleUiBack();
+}
+
+
 
 }

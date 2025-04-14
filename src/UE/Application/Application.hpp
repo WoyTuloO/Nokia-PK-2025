@@ -5,6 +5,7 @@
 #include "IEventsHandler.hpp"
 #include "Context.hpp"
 #include "SmsStorage.hpp"
+#include <optional>
 
 namespace ue
 {
@@ -32,7 +33,10 @@ public:
 
     void handleDisconnected() override;
 
-    void handleSmsReceive( common::PhoneNumber sender, std::string text) override;
+    void handleMessageReceive( common::PhoneNumber sender, std::string text) override;
+
+    void handleUiAction(std::optional<std::size_t> selectedIndex) override;
+    void handleUiBack() override;
 
 private:
     Context context;
