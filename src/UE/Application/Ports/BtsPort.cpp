@@ -13,9 +13,8 @@ BtsPort::BtsPort(common::ILogger &logger, common::ITransport &transport, common:
 
 void BtsPort::start(IBtsEventsHandler &handler)
 {
-    transport.registerMessageCallback([this](BinaryMessage msg) {handleMessage(msg);});
-    transport.registerDisconnectedCallback([this]() {handleDisconnected();});
-
+    transport.registerMessageCallback([this](BinaryMessage msg) { handleMessage(msg); });
+    transport.registerDisconnectedCallback([this]() { handleDisconnected(); });
     this->handler = &handler;
 }
 
@@ -54,12 +53,12 @@ void BtsPort::handleMessage(BinaryMessage msg)
         }
         case common::MessageId::Sms:
         {
-            handler->handleSmsReceive(from, reader.readRemainingText());
+            std::string text = reader.readRemainingText();
+            handler->handleSmsReceive(from, text);
             break;
         }
         default:
-            logger.logError("unknow message: ", msgId, ", from: ", from);
-
+            logger.logError("Unknown message: ", msgId, ", from: ", from);
         }
     }
     catch (std::exception const& ex)
@@ -68,20 +67,24 @@ void BtsPort::handleMessage(BinaryMessage msg)
     }
 }
 
-
 void BtsPort::sendAttachRequest(common::BtsId btsId)
 {
     logger.logDebug("sendAttachRequest: ", btsId);
-    common::OutgoingMessage msg{common::MessageId::AttachRequest,
-                                phoneNumber,
-                                common::PhoneNumber{}};
+    common::OutgoingMessage msg{common::MessageId::AttachRequest, phoneNumber, common::PhoneNumber{}};
     msg.writeBtsId(btsId);
     transport.sendMessage(msg.getMessage());
-
-
 }
 
-void BtsPort::handleDisconnected(){
+void BtsPort::sendSms(common::PhoneNumber to, const std::string& text)
+{
+    logger.logDebug("Sending SMS to: ", to);
+    common::OutgoingMessage msg{common::MessageId::Sms, phoneNumber, to};
+    msg.writeText(text);
+    transport.sendMessage(msg.getMessage());
+}
+
+void BtsPort::handleDisconnected()
+{
     if(handler)
         handler->handleDisconnected();
 }
