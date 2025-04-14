@@ -4,6 +4,8 @@
 #include "Logger/ILogger.hpp"
 #include <memory>
 #include "SmsStorage.hpp"
+#include "Messages/PhoneNumber.hpp"
+
 
 namespace ue
 {
@@ -15,6 +17,7 @@ struct Context
     IUserPort& user;
     ITimerPort& timer;
     std::unique_ptr<IEventsHandler> state{};
+    common::PhoneNumber myPhoneNumber;
 
     SmsStorage smsStorage;
 

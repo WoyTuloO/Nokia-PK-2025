@@ -57,6 +57,12 @@ void BtsPort::handleMessage(BinaryMessage msg)
             handler->handleMessageReceive(from, reader.readRemainingText());
             break;
         }
+        case common::MessageId::UnknownRecipient: {
+            auto rec = reader.readPhoneNumber();
+            logger.logError("SMS delivery failed - Unknown recipient: ", rec);
+            if (handler) handler->handleMessageSentResult(rec, false);
+            break;
+        }
         default:
             logger.logError("unknow message: ", msgId, ", from: ", from);
 
@@ -84,6 +90,16 @@ void BtsPort::sendAttachRequest(common::BtsId btsId)
 void BtsPort::handleDisconnected(){
     if(handler)
         handler->handleDisconnected();
+}
+
+void BtsPort::sendMessage(common::PhoneNumber to, const std::string& text)
+{
+    logger.logInfo("Sending SMS to: ", to);
+    common::OutgoingMessage msg{common::MessageId::Sms,
+                                phoneNumber,
+                                to};
+    msg.writeText(text);
+    transport.sendMessage(msg.getMessage());
 }
 
 }

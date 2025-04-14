@@ -38,6 +38,10 @@ public:
     void handleUiAction(std::optional<std::size_t> selectedIndex) override;
     void handleUiBack() override;
 
+  void handleMessageSentResult(common::PhoneNumber to, bool success) override;
+  void handleMessageComposeResult(common::PhoneNumber receiver, const std::string& text) override;
+
+
 private:
     Context context;
     common::PrefixedLogger logger;

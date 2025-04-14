@@ -18,6 +18,7 @@ void UserPort::start(IEventsHandler &handler){
     gui.setTitle("Nokia " + to_string(phoneNumber));
     gui.setAcceptCallback(std::bind(&UserPort::acceptCallback, this));
     gui.setRejectCallback(std::bind(&UserPort::rejectCallback, this));
+    gui.setMailCallback(std::bind(&UserPort::mailCallback, this));
 
 }
 
@@ -25,6 +26,8 @@ void UserPort::stop(){
     handler = nullptr;
     gui.setRejectCallback(nullptr);
     gui.setAcceptCallback(nullptr);
+    gui.setMailCallback(nullptr);
+
 }
 
 void UserPort::showNotConnected(){
@@ -42,8 +45,6 @@ void UserPort::showConnected(){
 
     IUeGui::IListViewMode& menu = gui.setListViewMode();
     menu.clearSelectionList();
-    menu.addSelectionListItem("Compose SMS", "Send new message");
-    menu.addSelectionListItem("View SMS", "Read received message");
     gui.showConnected();
 }
 
@@ -111,6 +112,38 @@ void UserPort:: acceptCallback(){
 
     handler->handleUiAction(selectedIdx);
 
+}
+
+
+void UserPort::mailCallback()
+{
+    if (!handler)
+        return;
+
+    logger.logDebug("Mail button pressed (SMS functionality)");
+
+    if (currentViewMode == view_details::VM_SMS_COMPOSE)
+    {
+        logger.logInfo("Sending message");
+        auto recipient = getMessageRecipient();
+        auto text = getMessageText();
+
+        if (!recipient.isValid() || text.empty()) {
+            showAlert("Error", "Invalid recipient or empty text");
+            return;
+        }
+        handler->handleSmsComposeResult(recipient, text);
+
+        gui.getSmsComposeMode().clearSmsText();
+    }
+    else
+    {
+        currentViewMode = view_details::VM_SMS_MENU;
+        IUeGui::IListViewMode &menu = gui.setListViewMode();
+        menu.clearSelectionList();
+        menu.addSelectionListItem("Compose SMS", "Send a new text message");
+        menu.addSelectionListItem("View SMS", "Read received messages");
+    }
 }
 
 

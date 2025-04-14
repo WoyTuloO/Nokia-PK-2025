@@ -60,6 +60,19 @@ void Application::handleUiBack(){
     context.state->handleUiBack();
 }
 
+void Application::handleMessageSentResult(common::PhoneNumber to, bool success)
+{
+    logger.logInfo("Handling SMS send result for: ", to, ", Success: ", success);
+    if (context.state)
+        context.state->handleMessageSentResult(to, success);
+}
 
+void Application::handleMessageComposeResult(common::PhoneNumber recipient, const std::string &text)
+{
+    context.smsStorage.addSentMessage(recipient, text);
+    context.bts.sendSms(recipient, text);
+
+    context.setState<ConnectedState>();
+}
 
 }

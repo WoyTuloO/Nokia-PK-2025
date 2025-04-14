@@ -6,10 +6,16 @@
 
 namespace ue{
 
-std::size_t SmsStorage::addMessage(common::PhoneNumber sender, const std::string& text){
-    messages.emplace_back(sender, text, false);
+std::size_t SmsStorage::addReceivedMessage(common::PhoneNumber sender, const std::string& text){
+    messages.emplace_back(sender, text);
     return messages.size() -1;
 }
+
+std::size_t SmsStorage::addSentMessage(common::PhoneNumber receiver, const std::string& text, SmsMessage::Status initStatus){
+    messages.emplace_back(receiver, text, initStatus);
+    return messages.size() -1;
+}
+
 
 const std::vector<SmsMessage>& SmsStorage::getAllMessages() const {
     return messages;
