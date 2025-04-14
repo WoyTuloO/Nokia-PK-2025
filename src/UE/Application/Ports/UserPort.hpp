@@ -28,4 +28,5 @@ private:
     IUserEventsHandler* handler = nullptr;
 };
 
+
 }

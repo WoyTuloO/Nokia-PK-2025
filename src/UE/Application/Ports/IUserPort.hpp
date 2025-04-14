@@ -32,4 +32,5 @@ namespace ue
         virtual std::string getSmsText() const = 0;
     };
 
+
 }

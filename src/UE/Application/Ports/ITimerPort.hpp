@@ -24,4 +24,5 @@ public:
     virtual void stopTimer() = 0;
 };
 
+
 }

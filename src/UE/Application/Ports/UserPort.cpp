@@ -89,4 +89,5 @@ std::string UserPort::getSmsText() const
     return gui.getSmsComposeMode().getSmsText();
 }
 
+
 }

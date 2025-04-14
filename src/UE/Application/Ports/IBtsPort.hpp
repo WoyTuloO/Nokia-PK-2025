@@ -29,4 +29,5 @@ public:
     virtual void sendSms(common::PhoneNumber to, const std::string& text) = 0;
 };
 
+
 }

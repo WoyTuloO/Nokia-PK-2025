@@ -32,5 +32,4 @@ ConnectingState::ConnectingState(Context &context)
     }
 
 
-
 }

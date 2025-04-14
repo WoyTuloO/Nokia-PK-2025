@@ -23,4 +23,5 @@ void ConnectedState::handleSmsReceive(common::PhoneNumber sender, std::string te
     context.user.showNewMessage();
 }
 
+
 }
