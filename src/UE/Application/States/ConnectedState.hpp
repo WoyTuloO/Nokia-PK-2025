@@ -12,8 +12,11 @@ public:
     void handleMessageReceive(common::PhoneNumber sender, std::string text) override;
     void handleMessageSentResult(common::PhoneNumber to, bool success) override;
 
+    void handleCallRequest(common::PhoneNumber from);
+
     void handleUiAction(std::optional<std::size_t> selectedIndex) override;
     void handleUiBack() override;
+    void handleTimeout() override;
 
 };
 
