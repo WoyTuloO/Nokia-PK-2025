@@ -2,6 +2,7 @@
 #include "Traits/EnumTraits.hpp"
 #include "UeGui/IListViewMode.hpp"
 #include "UeGui/ITextMode.hpp"
+#include "UeGui/IDialMode.hpp"
 #include "Utils/todo.h"
 
 #include <string>
@@ -52,38 +53,6 @@ void UserPort::showConnected()
     menu.addSelectionListItem("Call", "");
 
     gui.showConnected();
-}
-
-void UserPort::messageCallback()
-{
-    if (!handler)
-        return;
-
-    logger.logDebug("Message button pressed (SMS functionality)");
-
-    if (currentViewMode == view_mode::Message_compose)
-    {
-        logger.logInfo("Message button in compose mode - sending message");
-        auto reciver = getMessageRecipient();
-        auto text = getMessageText();
-
-        if (!reciver.isValid() || text.empty())
-        {
-            showNotify("Error", "Invalid reciver or empty text");
-            return;
-        }
-        handler->handleMessageComposeResult(reciver, text);
-
-        gui.setSmsComposeMode().clearSmsText();
-    }
-    else
-    {
-        currentViewMode = view_mode::Message_menu;
-        IUeGui::IListViewMode &menu = gui.setListViewMode();
-        menu.clearSelectionList();
-        menu.addSelectionListItem("Compose SMS", "Send a new text message");
-        menu.addSelectionListItem("View SMS", "Read received messages");
-    }
 }
 
 void UserPort::showNewMessage()
@@ -149,7 +118,6 @@ void UserPort::showMessageView(const SmsMessage &message)
 
 void UserPort::showNotify(const std::string &title, const std::string &message)
 {
-
     currentViewMode = view_mode::Default;
     logger.logInfo("Showing Alert: ", title);
     IUeGui::ITextMode &alerter = gui.setAlertMode();
@@ -163,6 +131,15 @@ void UserPort::showMessageComp()
     auto &composeMode = gui.setSmsComposeMode();
 
     composeMode.clearSmsText();
+}
+
+void UserPort::showCallComp()
+{
+    currentViewMode = view_mode::Call_compose;
+    logger.logInfo("Showing Call screen");
+    auto &mode = this->gui.setDialMode();
+
+    
 }
 
 void UserPort::showIncomingCall(const common::PhoneNumber &caller)
@@ -180,7 +157,6 @@ void UserPort::showCallMenu()
     IUeGui::IListViewMode &menu = gui.setListViewMode();
     menu.clearSelectionList();
     menu.addSelectionListItem("Dial Number", "Enter a number to call");
-    menu.addSelectionListItem("Call History", "View recent calls");
 }
 
 void UserPort::acceptCallback()
@@ -190,69 +166,65 @@ void UserPort::acceptCallback()
 
     std::optional<std::size_t> selectedIndexOpt;
 
-    if (currentViewMode == view_mode::Menu)
+    switch (currentViewMode)
     {
-        logger.logDebug("Accept in main menu - getting selected index");
-        auto &listView = gui.setListViewMode();
-        auto indexPair = listView.getCurrentItemIndex();
-        selectedIndexOpt = indexPair.first ? std::optional<std::size_t>(indexPair.second) : std::nullopt;
-    }
-    else if (currentViewMode == view_mode::Message_menu)
-    {
-        logger.logDebug("Accept in SMS menu - getting selected index");
-        auto &listView = gui.setListViewMode();
-        auto indexPair = listView.getCurrentItemIndex();
-        selectedIndexOpt = indexPair.first ? std::optional<std::size_t>(indexPair.second) : std::nullopt;
-
-        if (selectedIndexOpt.has_value())
+    case view_mode::Menu:;
         {
-            if (selectedIndexOpt.value() == 0)
+            logger.logDebug("Accept in main menu - getting selected index");
+            auto &listView = gui.setListViewMode();
+            auto indexPair = listView.getCurrentItemIndex();
+            selectedIndexOpt = indexPair.first ? std::optional<std::size_t>(indexPair.second) : std::nullopt;
+        }
+        break;
+    case view_mode::Message_menu:;
+        {
+            logger.logDebug("Accept in SMS menu - getting selected index");
+            auto &listView = gui.setListViewMode();
+            auto indexPair = listView.getCurrentItemIndex();
+            selectedIndexOpt = indexPair.first ? std::optional<std::size_t>(indexPair.second) : std::nullopt;
+
+            if (selectedIndexOpt.has_value())
             {
-                logger.logInfo("Compose SMS selected from SMS menu");
-                showMessageComp();
-                selectedIndexOpt = std::nullopt;
+                if (selectedIndexOpt.value() == 0)
+                {
+                    logger.logInfo("Compose SMS selected from SMS menu");
+                    showMessageComp();
+                    selectedIndexOpt = std::nullopt;
+                }
             }
         }
-    }
-    else if (currentViewMode == view_mode::Call_menu)
-    {
-        constexpr std::size_t dial_number_code{ 0 };
-        constexpr std::size_t call_history_code{ 1 };
-
-        logger.logDebug("Accept in Call menu - getting selected index");
-        auto &listView = gui.setListViewMode();
-        auto indexPair = listView.getCurrentItemIndex();
-        selectedIndexOpt = indexPair.first ? std::optional<std::size_t>(indexPair.second) : std::nullopt;
-
-        if (selectedIndexOpt.has_value())
+        break;
+    case view_mode::Message_list:;
         {
-            if (selectedIndexOpt.value() == 0)
-            {
-                logger.logInfo("Dial Number selected from Call menu");
-                // TODO: Implement dial number UI or action
-                gui.setDialMode();
-                TODO(Make selectedIndexOpt actually send someting to handleUiAction())
-                selectedIndexOpt = std::optional<std::size_t>(dial_number_code);
-            }
-            else if (selectedIndexOpt.value() == 1)
-            {
-                logger.logInfo("Call History selected from Call menu");
-                // TODO: Implement call history UI or action
-                selectedIndexOpt = std::optional<std::size_t>(call_history_code);
-            }
+            logger.logDebug("Accept in SMS list - getting selected SMS");
+            auto &listView = gui.setListViewMode();
+            auto indexPair = listView.getCurrentItemIndex();
+            selectedIndexOpt = indexPair.first ? std::optional<std::size_t>(indexPair.second) : std::nullopt;
         }
-    }
-    else if (currentViewMode == view_mode::Message_list)
-    {
-        logger.logDebug("Accept in SMS list - getting selected SMS");
-        auto &listView = gui.setListViewMode();
-        auto indexPair = listView.getCurrentItemIndex();
-        selectedIndexOpt = indexPair.first ? std::optional<std::size_t>(indexPair.second) : std::nullopt;
-    }
-    else if (currentViewMode == view_mode::Message_compose)
-    {
-        logger.logDebug("Accept in SMS compose - sending message");
-        selectedIndexOpt = std::nullopt;
+        break;
+    case view_mode::Message_compose:;
+        {
+            logger.logDebug("Accept in SMS compose - sending message");
+            selectedIndexOpt = std::nullopt;
+        }
+        break;
+    case view_mode::Call_compose:;
+        {
+            logger.logDebug("Accept in SMS list - dialling");
+            selectedIndexOpt = std::nullopt;
+        }
+        break;
+        TODO(Decide on these view modes)
+    case view_mode::Message_view:;
+        [[fallthrough]];
+    case view_mode::Call_menu:;
+        [[fallthrough]];
+    default:;
+        {
+            logger.logError("Aplication set to undefined view mode");
+            selectedIndexOpt = std::nullopt;
+        }
+        break;
     }
 
     logger.logDebug("Sending UI action to handler, mode: ", common::enumUnderlyingValue(currentViewMode));
@@ -280,7 +252,7 @@ std::string UserPort::getMessageText() const
 
 common::PhoneNumber UserPort::getCallRecipient() const
 {
-    return gui.setSmsComposeMode().getPhoneNumber();
+    return gui.setDialMode().getPhoneNumber();
 }
 
 }

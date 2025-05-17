@@ -7,48 +7,55 @@ namespace ue
 DiallingState::DiallingState(Context& context) : BaseState(context, "DiallingState")
 {
     this->logger.logInfo("Entered DiallingState");
-    this->context.user.showCallMenu();
+    this->context.user.showCallComp();
 };
 
 void DiallingState::handleUiAction(std::optional<std::size_t> selectedIndex)
 {
-    constexpr std::size_t dial_number_code{ 0 };
-    constexpr std::size_t call_history_code{ 1 };
+    using namespace std::literals::chrono_literals;
 
-    if (!selectedIndex.has_value())
+    logger.logInfo("DiallingState: User tapped Call");
+
+    this->number_to_call = this->context.user.getCallRecipient();
+
+    if (!this->validateCallNumber())
     {
-        this->logger.logInfo("UI Action received with no index in Call menu");
+        logger.logInfo("DiallingState: invalid recipient (", this->number_to_call, ")");
+        context.user.showNotify("Error", "Invalid recipient");
         return;
     }
 
-    switch (selectedIndex.value())
-    {
-    case dial_number_code: {
-        this->logger.logDebug("Dial number selected");
-        auto recipient{ this->context.user.getCallRecipient() };
+    logger.logInfo("DiallingState: trying to call (", this->number_to_call, ")");
+    
+    this->context.bts.sendCallRequest(this->number_to_call);
+    this->context.timer.startTimer(60s);
 
-        if (!recipient.isValid())
-        {
-            this->logger.logInfo("Cannot make call: Invalid receiver");
-            this->context.user.showNotify("Error", "Invalid receiver");
-            return;
-        }
+    TODO(Call accept)
 
-        break;
-    }
-    case call_history_code:
-        this->logger.logDebug("Call history selected");
-        TODO(Implement call history display)
-        break;
-    default:
-        this->logger.logError("Invalid menu option selected: ", selectedIndex.value());
-        break;
-    }
+    // logger.logInfo("Successfully connected");
+    // this->context.timer.stopTimer();
+
+    TODO(Set state to TalkingState)
+    TODO(Consider timeout)
 }
 
 void DiallingState::handleUiBack()
 {
-    this->context.logger.logInfo("Dialling cancelled by the user");
+    this->context.logger.logInfo("DiallingState: Dialling cancelled by the user");
     this->context.setState<ConnectedState>();
+}
+
+void DiallingState::handleTimeout()
+{
+    this->context.bts.sendCallDropped(this->number_to_call);
+    this->context.logger.logInfo("DiallingState: Dialling timed out");
+    TODO(show user alert that call timed out)
+    this->context.setState<ConnectedState>();
+}
+
+
+constexpr bool DiallingState::validateCallNumber() const noexcept
+{
+    return this->context.user.getCallRecipient().isValid();
 }
 }

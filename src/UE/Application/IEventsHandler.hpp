@@ -16,7 +16,8 @@ namespace ue{
             Message_view,       //3
             Message_compose,    //4
             Message_menu,       //5
-            Call_menu           //6
+            Call_menu,          //6
+            Call_compose        //7
         };
     }
 

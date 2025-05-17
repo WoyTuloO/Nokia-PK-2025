@@ -31,6 +31,7 @@ public:
     void showMessageView(const SmsMessage& message);
     void showNotify(const std::string& name, const std::string& message);
     void showMessageComp() override;
+    void showCallComp() override;
 
     void showIncomingCall(const common::PhoneNumber& caller) override;
     void showCallInProgress(const common::PhoneNumber& otherPhoneNumber) override;
