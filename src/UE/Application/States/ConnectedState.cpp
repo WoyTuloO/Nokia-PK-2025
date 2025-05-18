@@ -72,6 +72,9 @@ void ConnectedState::handleMessageSentResult(common::PhoneNumber to, bool succes
 
 void ConnectedState::handleCallRequest(common::PhoneNumber from){
     //TODO
+    logger.logInfo("Incoming Call from: ", from);
+    context.user.showIncomingCall(from);
+    context.setState<IncomingCallState>(from);
 }
 
 void ConnectedState::handleTimeout(){
