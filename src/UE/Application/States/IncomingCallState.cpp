@@ -47,3 +47,4 @@ void IncomingCallState::rejectCall() {
     context.bts.sendCallDropped(callerNumber);
     context.setState<ConnectedState>();
 }
+}
