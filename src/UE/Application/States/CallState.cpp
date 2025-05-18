@@ -58,7 +58,7 @@ void DiallingState::handleCallAccepted(common::PhoneNumber from)
 {
     logger.logInfo("DiallingState: Successfully connected");
     this->context.timer.stopTimer();
-    this->context.setState<TalkingState>();
+    this->context.setState<TalkingState>(from);
 }
 
 void DiallingState::handleCallDropped(common::PhoneNumber from)
