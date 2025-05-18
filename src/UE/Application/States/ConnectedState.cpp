@@ -2,6 +2,7 @@
 #include "NotConnectedState.hpp"
 #include "ComposeSmsState.hpp"
 #include "ViewListSmsState.hpp"
+#include "IncomingCallState.hpp"
 #include "CallState.hpp"
 
 namespace ue{
