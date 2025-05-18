@@ -9,6 +9,7 @@ public:
     void handleUiAction(std::optional<std::size_t> selectedIndex) override;
     void handleUiBack() override;
     void handleTimeout() override;
+    void handleCallDropped(common::PhoneNumber from) override;
 
 private:
     common::PhoneNumber callerNumber;
