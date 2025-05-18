@@ -19,6 +19,10 @@ public:
     MOCK_METHOD(void, handleMessageReceive, (common::PhoneNumber sender, std::string text), (override));
     MOCK_METHOD(void, handleMessageSentResult, (common::PhoneNumber to, bool success), (final));
     MOCK_METHOD(void, handleCallRequest, (common::PhoneNumber from), (override));
+    MOCK_METHOD(void, handleCallDropped, (common::PhoneNumber from), (override));
+    MOCK_METHOD(void, handleCallTalk, (common::PhoneNumber to, const std::string& text), (override));
+    MOCK_METHOD(void, handleCallAccepted, (common::PhoneNumber from), (override));
+    MOCK_METHOD(void, handleUnknownRecipient, (common::PhoneNumber from), (override));
 };
 
 class IBtsPortMock : public IBtsPort
