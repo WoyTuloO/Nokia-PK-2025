@@ -2,6 +2,8 @@
 
 #include "ITimerPort.hpp"
 #include "Logger/PrefixedLogger.hpp"
+#include <thread>
+#include <condition_variable>
 
 namespace ue{
 
@@ -18,6 +20,11 @@ public:
 private:
     common::PrefixedLogger logger;
     ITimerEventsHandler* handler = nullptr;
+    std::mutex countdown_guard {};
+    std::condition_variable countdown_cv {};
+
+    void startCountdown(Duration duration);
+    void stopCountdown();
 };
 
 }
