@@ -30,19 +30,13 @@ void DiallingState::handleUiAction(std::optional<std::size_t> selectedIndex)
     
     this->context.bts.sendCallRequest(this->number_to_call);
     this->context.timer.startTimer(60s);
-
-    TODO(Call accept)
-
-    // logger.logInfo("Successfully connected");
-    // this->context.timer.stopTimer();
-
-    TODO(Set state to TalkingState)
-    TODO(Consider timeout)
 }
 
 void DiallingState::handleUiBack()
 {
     this->context.logger.logInfo("DiallingState: Dialling cancelled by the user");
+    this->context.timer.stopTimer();
+    this->context.bts.sendCallDropped(this->number_to_call);
     this->context.setState<ConnectedState>();
 }
 

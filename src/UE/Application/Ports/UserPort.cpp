@@ -5,6 +5,7 @@
 #include "UeGui/IDialMode.hpp"
 #include "Utils/todo.h"
 
+#include <format>
 #include <string>
 
 namespace ue
@@ -138,13 +139,14 @@ void UserPort::showCallComp()
     currentViewMode = view_mode::Call_compose;
     logger.logInfo("Showing Call screen");
     auto &mode = this->gui.setDialMode();
-
-    
 }
 
 void UserPort::showIncomingCall(const common::PhoneNumber &caller)
 {
     logger.logInfo("Showing incoming call from: ", caller);
+    auto &mode = this->gui.setAlertMode();
+
+    mode.setText(std::format("INCOMING CALL\n[{}]", caller.value));
 }
 
 void UserPort::showCallInProgress(const common::PhoneNumber &otherPhoneNumber)
