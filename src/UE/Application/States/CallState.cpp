@@ -13,66 +13,86 @@ DiallingState::DiallingState(Context& context) : BaseState(context, "DiallingSta
 
 void DiallingState::handleUiAction(std::optional<std::size_t> selectedIndex)
 {
-    using namespace std::literals::chrono_literals;
-
     logger.logInfo("DiallingState: User tapped Call");
 
-    this->number_to_call = this->context.user.getCallRecipient();
+    auto number_to_call = this->context.user.getCallRecipient();
 
     if (!this->validateCallNumber())
     {
-        logger.logInfo("DiallingState: invalid recipient (", this->number_to_call, ")");
+        logger.logInfo("DiallingState: invalid recipient (", number_to_call, ")");
         context.user.showNotify("Error", "Invalid recipient");
         return;
     }
 
-    logger.logInfo("DiallingState: trying to call (", this->number_to_call, ")");
-    
-    this->context.bts.sendCallRequest(this->number_to_call);
-    this->context.timer.startTimer(60s);
+    logger.logInfo("DiallingState: trying to call (", number_to_call, ")");
+    this->context.setState<OutgoingDiallingState>(number_to_call);
 }
 
 void DiallingState::handleUiBack()
 {
-    this->context.logger.logInfo("DiallingState: Dialling cancelled by the user");
-    this->context.timer.stopTimer();
-    this->context.bts.sendCallDropped(this->number_to_call);
-    this->context.setState<ConnectedState>();
-}
-
-void DiallingState::handleTimeout()
-{
-    this->context.bts.sendCallDropped(this->number_to_call);
-    this->context.logger.logInfo("DiallingState: Dialling timed out");
-    TODO(show user alert that call timed out)
-    this->context.setState<ConnectedState>();
-}
-
-void DiallingState::handleCallAccepted(common::PhoneNumber from)
-{
-    logger.logInfo("DiallingState: Successfully connected");
-    this->context.timer.stopTimer();
-    this->context.setState<TalkingState>(from);
-}
-
-void DiallingState::handleCallDropped(common::PhoneNumber from)
-{
-    logger.logInfo("DiallingState: Callee dropped the call");
-    this->context.timer.stopTimer();
-    this->context.setState<ConnectedState>();
-}
-
-void DiallingState::handleUnknownRecipient(common::PhoneNumber from)
-{
-    logger.logInfo("DiallingState: Recipient not found");
-    this->context.timer.stopTimer();
-    TODO(show that there was not such number connected to BTS)
+    logger.logInfo("Exiting DiallingState");
     this->context.setState<ConnectedState>();
 }
 
 constexpr bool DiallingState::validateCallNumber() const noexcept
 {
     return this->context.user.getCallRecipient().isValid();
+}
+
+}
+
+namespace ue
+{
+OutgoingDiallingState::OutgoingDiallingState(Context& context, common::PhoneNumber to) : BaseState(context, "DiallingState"), number_to_call{to}
+{
+    using namespace std::literals::chrono_literals;
+
+    this->logger.logInfo("Entered OutgoingDiallingState");
+    this->context.bts.sendCallRequest(number_to_call);
+    this->context.timer.startTimer(60s);
+    this->context.user.showCallInProgress(this->number_to_call);
+}
+
+void OutgoingDiallingState::handleUiAction(std::optional<std::size_t> selectedIndex)
+{
+    this->logger.logDebug("Accepting while calling does nothing - ignoring...");
+}
+
+void OutgoingDiallingState::handleUiBack()
+{
+    this->context.logger.logInfo("Dialling cancelled by the user");
+    this->context.timer.stopTimer();
+    this->context.bts.sendCallDropped(this->number_to_call);
+    this->context.setState<ConnectedState>();
+}
+
+void OutgoingDiallingState::handleTimeout()
+{
+    this->context.bts.sendCallDropped(this->number_to_call);
+    this->context.logger.logInfo("Dialling timed out");
+    this->context.setState<ConnectedState>();
+}
+
+void OutgoingDiallingState::handleCallAccepted(common::PhoneNumber from)
+{
+    logger.logInfo("Successfully connected");
+    this->context.timer.stopTimer();
+    this->context.setState<TalkingState>(from);
+}
+
+void OutgoingDiallingState::handleCallDropped(common::PhoneNumber from)
+{
+    logger.logInfo("Callee dropped the call");
+    this->context.timer.stopTimer();
+    this->context.setState<ConnectedState>();
+}
+
+void OutgoingDiallingState::handleUnknownRecipient(common::PhoneNumber from)
+{
+    logger.logInfo("Recipient not found");
+    this->context.timer.stopTimer();
+    TODO(showPartnerNotAvailable)
+    this->context.setState<ConnectedState>();
 }
 
 }
