@@ -1,5 +1,6 @@
 #include "CallState.hpp"
 #include "ConnectedState.hpp"
+#include "TalkingState.hpp"
 #include "Utils/todo.h"
 
 namespace ue
