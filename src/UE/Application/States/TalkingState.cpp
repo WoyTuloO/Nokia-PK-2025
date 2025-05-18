@@ -4,7 +4,7 @@
 namespace ue {
 
 TalkingState::TalkingState(Context& context, common::PhoneNumber to)
-    : BaseState(context, "TalkingState"), otherPartyNumber(to) {
+    : BaseState(context, "TalkingState"), to(to) {
     logger.logInfo("Having call with: ", to);
     context.user.showCallInProgress(to);
 }

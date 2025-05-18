@@ -143,13 +143,24 @@ void UserPort::showCallComp()
 }
 
 void UserPort::showIncomingCall(const common::PhoneNumber &caller)
-{}
+{
+    logger.logInfo("Showing incoming call from: ", caller);
+}
+
 void UserPort::showCallInProgress(const common::PhoneNumber &otherPhoneNumber)
-{}
+{
+    logger.logInfo("Showing call in progress with: ", otherPhoneNumber);
+}
+
 void UserPort::showEndedCall(const common::PhoneNumber &otherPhoneNumber, const std::string &reason)
-{}
+{
+    logger.logInfo("Showing ended call with: ", otherPhoneNumber, " reason: ", reason);
+}
+
 void UserPort::showCallFailed(const common::PhoneNumber &otherPhoneNumber, const std::string &errorMessage)
-{}
+{
+    logger.logInfo("Showing failed call with: ", otherPhoneNumber, " error: ", errorMessage);
+}
 
 void UserPort::showCallMenu()
 {
