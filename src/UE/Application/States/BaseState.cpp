@@ -56,4 +56,24 @@ void BaseState::handleCallRequest(common::PhoneNumber from) {
     logger.logError("Unexpected: handleCallRequest");
 }
 
+void BaseState::handleCallDropped(common::PhoneNumber from)
+{
+    logger.logError("Unexpected: handleCallDropped");
+}
+
+void BaseState::handleCallTalk(common::PhoneNumber to, const std::string& text)
+{
+    logger.logError("Unexpected: handleCallTalk");
+}
+
+void BaseState::handleCallAccepted(common::PhoneNumber from)
+{
+    logger.logError("Unexpected: handleCallAccepted");
+}
+
+void BaseState::handleUnknownRecipient(common::PhoneNumber from)
+{
+    logger.logError("Unexpected: handleUnknownRecipient");
+}
+
 }
