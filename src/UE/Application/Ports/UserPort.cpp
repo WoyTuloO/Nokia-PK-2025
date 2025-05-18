@@ -143,15 +143,27 @@ void UserPort::showCallComp()
 
 void UserPort::showIncomingCall(const common::PhoneNumber &caller)
 {
+    currentViewMode = view_mode::Call_incoming;
     logger.logInfo("Showing incoming call from: ", caller);
     auto &mode = this->gui.setAlertMode();
 
     mode.setText(std::format("INCOMING CALL\n[{}]", caller.value));
 }
 
+void UserPort::showCallTalkInterface()
+{
+    currentViewMode = view_mode::Call_talk;
+    logger.logInfo("Show call talk gui");
+    auto &mode = this->gui.setCallMode();
+}
+
 void UserPort::showCallInProgress(const common::PhoneNumber &otherPhoneNumber)
 {
+    currentViewMode = view_mode::Call_outgoing;
     logger.logInfo("Showing call in progress with: ", otherPhoneNumber);
+    auto &mode = this->gui.setAlertMode();
+
+    mode.setText(std::format("CALLING\n[{}]", otherPhoneNumber.value));
 }
 
 void UserPort::showEndedCall(const common::PhoneNumber &otherPhoneNumber, const std::string &reason)
@@ -224,6 +236,18 @@ void UserPort::acceptCallback()
     case view_mode::Call_compose:;
         {
             logger.logDebug("Accept in SMS list - dialling");
+            selectedIndexOpt = std::nullopt;
+        }
+        break;
+    case view_mode::Call_outgoing:;
+        {
+            logger.logDebug("Accept from caller when calling - does nothing");
+            selectedIndexOpt = std::nullopt;
+        }
+        break;
+    case view_mode::Call_incoming:;
+        {
+            logger.logDebug("Accept from callee when being called - Accept Call");
             selectedIndexOpt = std::nullopt;
         }
         break;
