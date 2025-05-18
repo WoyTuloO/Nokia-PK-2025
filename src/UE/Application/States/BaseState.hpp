@@ -25,6 +25,10 @@ public:
     void handleUiBack() override;
 
     void handleCallRequest(common::PhoneNumber from) override;
+    void handleCallDropped(common::PhoneNumber from) override;
+    void handleCallTalk(common::PhoneNumber to, const std::string& text) override;
+    void handleCallAccepted(common::PhoneNumber from) override;
+    void handleUnknownRecipient(common::PhoneNumber from) override;
 
 
 protected:
