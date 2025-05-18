@@ -53,9 +53,31 @@ void DiallingState::handleTimeout()
     this->context.setState<ConnectedState>();
 }
 
+void DiallingState::handleCallAccepted(common::PhoneNumber from)
+{
+    logger.logInfo("DiallingState: Successfully connected");
+    this->context.timer.stopTimer();
+    this->context.setState<TalkingState>();
+}
+
+void DiallingState::handleCallDropped(common::PhoneNumber from)
+{
+    logger.logInfo("DiallingState: Callee dropped the call");
+    this->context.timer.stopTimer();
+    this->context.setState<ConnectedState>();
+}
+
+void DiallingState::handleUnknownRecipient(common::PhoneNumber from)
+{
+    logger.logInfo("DiallingState: Recipient not found");
+    this->context.timer.stopTimer();
+    TODO(show that there was not such number connected to BTS)
+    this->context.setState<ConnectedState>();
+}
 
 constexpr bool DiallingState::validateCallNumber() const noexcept
 {
     return this->context.user.getCallRecipient().isValid();
 }
+
 }
