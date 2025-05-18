@@ -30,11 +30,13 @@ public:
     virtual void showIncomingCall(const common::PhoneNumber& caller) = 0;
     // display the ongoing call status with the specified other party (callee or caller) 
     virtual void showCallInProgress(const common::PhoneNumber& otherPhoneNumber) = 0;
+    // display calltalk gui interface
+    virtual void showCallTalkInterface() = 0;
     // notify the user that the call has ended and why
     virtual void showEndedCall(const common::PhoneNumber& otherPhoneNumber, const std::string& reason) = 0; 
     virtual void showCallFailed(const common::PhoneNumber& otherPhoneNumber, const std::string& errorMessage) = 0;
 
-    virtual void showCallMenu() = 0;
+    [[deprecated("There no longer exists Call submenu")]] virtual void showCallMenu() = 0;
 
     virtual common::PhoneNumber getMessageRecipient() const = 0;
     virtual std::string getMessageText() const = 0;
