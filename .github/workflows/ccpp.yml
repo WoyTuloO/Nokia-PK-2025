@@ -51,6 +51,7 @@ jobs:
       id: linter
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        CPP_LINTER_PR_REVIEW_SUMMARY_ONLY: true
       with:
         style: 'file'  # Use .clang-format config file
         tidy-checks: 'bugprone-*,performance-*,readability-*,modernize-*,clang-analyzer-*,cppcoreguidelines-*'
@@ -61,8 +62,6 @@ jobs:
         version: 19
         verbosity: debug
         tidy-review: false
-        format-review: false
-        passive-reviews: true
         ignore: 
           ".github|
            docs|
