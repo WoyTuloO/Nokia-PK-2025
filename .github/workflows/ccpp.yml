@@ -53,6 +53,8 @@ jobs:
         thread-comments: ${{ github.event_name == 'pull_request' && 'update' }}
         files-changed-only: true
         extra-args: '-std=c++20 -Wall -Wextra'
+        version: 19
+        verbosity: debug
         ignore: 
           ".github|
            docs|
