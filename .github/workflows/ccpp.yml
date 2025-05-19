@@ -13,7 +13,7 @@ jobs:
   build:
     permissions:
       contents: write
-      pull_requests: write
+      pull-requests: write
 
     runs-on: ubuntu-latest
     defaults:
