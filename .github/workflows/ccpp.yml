@@ -60,6 +60,7 @@ jobs:
            src/bin|
            src/BTS|
            src/COMMON|
+          !src/COMMON/Utils|
            src/googletest|
            src/lib
           "
