@@ -11,6 +11,10 @@ permissions:
 
 jobs:
   build:
+    permissions:
+      metadata: read
+      contents: write
+      pull_requests: write
 
     runs-on: ubuntu-latest
     defaults:
@@ -48,6 +52,8 @@ jobs:
         tidy-checks: 'bugprone-*,performance-*,readability-*,modernize-*,clang-analyzer-*,cppcoreguidelines-*'
         # only 'update' a single comment in a pull request thread.
         thread-comments: ${{ github.event_name == 'pull_request' && 'update' }}
+        format-review: true
+        passive-reviews: true
         files-changed-only: true
         extra-args: '-std=c++20 -Wall -Wextra'
         ignore: 
