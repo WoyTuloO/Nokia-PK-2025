@@ -138,7 +138,7 @@ void UserPort::showCallComp()
 {
     currentViewMode = view_mode::Call_compose;
     logger.logInfo("Showing Call screen");
-    auto &mode = this->gui.setDialMode();
+    this->gui.setDialMode();
 }
 
 void UserPort::showIncomingCall(const common::PhoneNumber &caller)
@@ -154,7 +154,7 @@ void UserPort::showCallTalkInterface()
 {
     currentViewMode = view_mode::Call_talk;
     logger.logInfo("Show call talk gui");
-    auto &mode = this->gui.setCallMode();
+    this->gui.setCallMode();
 }
 
 void UserPort::showCallInProgress(const common::PhoneNumber &otherPhoneNumber)

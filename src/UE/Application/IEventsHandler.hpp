@@ -34,8 +34,6 @@ namespace ue{
 
         virtual void handleUiAction(std::optional<std::size_t> selectedIndex) = 0;
         virtual void handleUiBack() = 0;
-        virtual void handleMessageReceive(common::PhoneNumber from, std::string text) = 0;
-        virtual void handleMessageSentResult(common::PhoneNumber to, bool success) = 0;
         virtual void handleMessageComposeResult(common::PhoneNumber reciver, const std::string& text) = 0;
     };
 

@@ -6,7 +6,7 @@ namespace ue{
 
 class ConnectingState : public BaseState{
 public:
-    ConnectingState(Context& context);
+    explicit ConnectingState(Context& context);
 
 
     void handleAttachAccept() override;

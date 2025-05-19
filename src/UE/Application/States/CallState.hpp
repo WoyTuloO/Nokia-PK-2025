@@ -6,7 +6,7 @@ namespace ue
 class DiallingState : public BaseState
 {
 public:
-    DiallingState(Context& context);
+    explicit DiallingState(Context& context);
     void handleUiAction(std::optional<std::size_t> selectedIndex) override;
     void handleUiBack() override;
 private:
