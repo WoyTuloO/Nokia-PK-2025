@@ -60,6 +60,9 @@ jobs:
         extra-args: '-std=c++20 -Wall -Wextra'
         version: 19
         verbosity: debug
+        tidy-review: false
+        format-review: false
+        passive-reviews: true
         ignore: 
           ".github|
            docs|
