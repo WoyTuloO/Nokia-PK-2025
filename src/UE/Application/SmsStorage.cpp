@@ -20,7 +20,8 @@ const std::vector<SmsMessage>& SmsStorage::getAllMessages() const{
 std::size_t SmsStorage::getUnreadCount() const{
     std::size_t counter = 0;
 
-    for (auto sms: messages){
+    // Potential use for std::count_if
+    for (auto const& sms: messages){
         if (sms.direction == SmsMessage::Dir::in && sms.status == SmsMessage::Status::receiveUR)
             counter++;
     }

@@ -41,11 +41,17 @@ jobs:
       run: |
         cppcheck --std=c++20 --enable=warning,style,performance --library=qt.cfg,googletest.cfg -igoogletest .
 
+    - name: Run cmake
+      run: |
+        cmake .
+      working-directory: ./src
+
     - name: Run C/C++ Linter
       uses: cpp-linter/cpp-linter-action@v2
       id: linter
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        CPP_LINTER_PR_REVIEW_SUMMARY_ONLY: true
       with:
         style: 'file'  # Use .clang-format config file
         tidy-checks: 'bugprone-*,performance-*,readability-*,modernize-*,clang-analyzer-*,cppcoreguidelines-*'
@@ -55,6 +61,9 @@ jobs:
         passive-reviews: true
         files-changed-only: true
         extra-args: '-std=c++20 -Wall -Wextra'
+        version: 19
+        verbosity: debug
+        tidy-review: false
         ignore: 
           ".github|
            docs|
@@ -62,6 +71,7 @@ jobs:
            src/bin|
            src/BTS|
            src/COMMON|
+          !src/COMMON/Utils|
            src/googletest|
            src/lib
           "
@@ -72,7 +82,6 @@ jobs:
 
     - name: Make project
       run: |
-        cmake .
         cmake --build . --parallel 4
       working-directory: ./src
 

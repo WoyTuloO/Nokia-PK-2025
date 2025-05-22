@@ -28,9 +28,11 @@ public:
     MOCK_METHOD(void, showMessageView, (const SmsMessage& message), (override));
     MOCK_METHOD(void, showNotify, (const std::string& name, const std::string& message), (final));
     MOCK_METHOD(void, showMessageComp, (), (final));
+    MOCK_METHOD(void, showCallComp, (), (final));
 
     MOCK_METHOD(void, showIncomingCall, (const common::PhoneNumber& caller), (override));
     MOCK_METHOD(void, showCallInProgress, (const common::PhoneNumber& otherPhoneNumber), (override));
+    MOCK_METHOD(void, showCallTalkInterface, (), (override));
     MOCK_METHOD(void,
                 showEndedCall,
                 (const common::PhoneNumber& otherPhoneNumber, const std::string& reason),

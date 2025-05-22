@@ -18,6 +18,11 @@ public:
     MOCK_METHOD(void, handleDisconnected, (), (final));
     MOCK_METHOD(void, handleMessageReceive, (common::PhoneNumber sender, std::string text), (override));
     MOCK_METHOD(void, handleMessageSentResult, (common::PhoneNumber to, bool success), (final));
+    MOCK_METHOD(void, handleCallRequest, (common::PhoneNumber from), (override));
+    MOCK_METHOD(void, handleCallDropped, (common::PhoneNumber from), (override));
+    MOCK_METHOD(void, handleCallTalk, (common::PhoneNumber to, const std::string& text), (override));
+    MOCK_METHOD(void, handleCallAccepted, (common::PhoneNumber from), (override));
+    MOCK_METHOD(void, handleUnknownRecipient, (common::PhoneNumber from), (override));
 };
 
 class IBtsPortMock : public IBtsPort
@@ -28,6 +33,12 @@ public:
 
     MOCK_METHOD(void, sendAttachRequest, (common::BtsId), (final));
     MOCK_METHOD(void, sendMessage, (common::PhoneNumber to, const std::string& text), (final));
+    MOCK_METHOD(void, sendCallRequest, (common::PhoneNumber to));
+    MOCK_METHOD(void, sendCallDropped, (common::PhoneNumber to));
+    MOCK_METHOD(void, sendCallTalk, (common::PhoneNumber to, const std::string& text));
+    MOCK_METHOD(void, sendCallAccepted, (common::PhoneNumber to));
+    MOCK_METHOD(void, sendUnknownRecipient, (common::PhoneNumber to));
+
 };
 
 }

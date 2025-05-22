@@ -2,6 +2,8 @@
 #include "NotConnectedState.hpp"
 #include "ComposeSmsState.hpp"
 #include "ViewListSmsState.hpp"
+#include "IncomingCallState.hpp"
+#include "CallState.hpp"
 
 namespace ue{
 
@@ -44,8 +46,7 @@ void ConnectedState::handleUiAction(std::optional<std::size_t> selectedIndex){
 
         case 2:
             logger.logInfo("Call selected");
-            // TODO: Set state to CallState or similar to handle call menu
-            // context.setState<CallState>();
+            context.setState<DiallingState>();
             break;
 
         default:
@@ -56,9 +57,11 @@ void ConnectedState::handleUiAction(std::optional<std::size_t> selectedIndex){
 
 void ConnectedState::handleUiBack(){
     logger.logInfo("Back action in main menu - ignored");
+
+    //TODO: anulowanie połączenia
 }
 
-    void ConnectedState::handleMessageSentResult(common::PhoneNumber to, bool success){
+void ConnectedState::handleMessageSentResult(common::PhoneNumber to, bool success){
     logger.logInfo("Received SMS send result for ", to, " while in main menu. Success: ", success);
     if (!success) {
         if (!context.smsStorage.markSmsOutFailed()) {
@@ -66,6 +69,17 @@ void ConnectedState::handleUiBack(){
         }
         context.user.showNotify("SMS Failed", "Could not send SMS to " + common::to_string(to));
     }
+}
+
+void ConnectedState::handleCallRequest(common::PhoneNumber from){
+    //TODO
+    logger.logInfo("Incoming Call from: ", from);
+    context.user.showIncomingCall(from);
+    context.setState<IncomingCallState>(from);
+}
+
+void ConnectedState::handleTimeout(){
+    //TODO: 60s do akceptacji połączenia
 }
 
 }

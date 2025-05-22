@@ -2,12 +2,14 @@
 
 #include "ITimerPort.hpp"
 #include "Logger/PrefixedLogger.hpp"
+#include <thread>
+#include <condition_variable>
 
 namespace ue{
 
 class TimerPort : public ITimerPort{
 public:
-    TimerPort(common::ILogger& logger);
+    explicit TimerPort(common::ILogger& logger);
 
     void start(ITimerEventsHandler& handler);
     void stop();
@@ -18,6 +20,11 @@ public:
 private:
     common::PrefixedLogger logger;
     ITimerEventsHandler* handler = nullptr;
+    std::mutex countdown_guard {};
+    std::condition_variable countdown_cv {};
+
+    void startCountdown(Duration duration);
+    void stopCountdown();
 };
 
 }
