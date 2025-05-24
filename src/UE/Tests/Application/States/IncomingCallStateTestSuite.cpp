@@ -15,7 +15,7 @@ using namespace ::testing;
 
 class IncomingCallStateTestSuite : public Test
 {
-private:
+protected:
     const common::PhoneNumber caller{ 123 };
     NiceMock<common::ILoggerMock> loggerMock;
     StrictMock<IBtsPortMock> btsPortMock;
@@ -25,7 +25,6 @@ private:
     Context context;
     std::unique_ptr<IncomingCallState> state;
 
-public:
     IncomingCallStateTestSuite() : context{ loggerMock, btsPortMock, userPortMock, timerPortMock }
     {}
 
