@@ -7,6 +7,7 @@
 #include "Messages/PhoneNumber.hpp"
 #include "SmsStorage.hpp"
 #include "UeGui/ISmsComposeMode.hpp"
+#include "UeGui/ICallMode.hpp"
 #include <optional>
 #include <vector>
 
@@ -44,6 +45,11 @@ public:
     common::PhoneNumber getMessageRecipient() const override;
     std::string getMessageText() const override;
     common::PhoneNumber getCallRecipient() const override;
+    std::string getCallText() const override;
+    void clearIncomingCallText() override;
+    void clearOutgoingCallText() override;
+    void appendCallText(std::string const& message) override;
+
 
 private:
     void acceptCallback();

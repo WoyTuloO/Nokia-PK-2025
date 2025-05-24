@@ -298,4 +298,25 @@ common::PhoneNumber UserPort::getCallRecipient() const
     return gui.setDialMode().getPhoneNumber();
 }
 
+std::string UserPort::getCallText() const
+{
+    return gui.setCallMode().getOutgoingText();
+}
+
+void UserPort::clearIncomingCallText()
+{
+    gui.setCallMode().clearIncomingText();
+}
+
+void UserPort::clearOutgoingCallText()
+{
+    gui.setCallMode().clearOutgoingText();
+}
+
+void UserPort::appendCallText(std::string const& message)
+{
+    gui.setCallMode().appendIncomingText(message);
+}
+
+
 }

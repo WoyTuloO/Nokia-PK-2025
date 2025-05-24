@@ -47,6 +47,10 @@ public:
     MOCK_METHOD(common::PhoneNumber, getMessageRecipient, (), (const, final));
     MOCK_METHOD(std::string, getMessageText, (), (const, final));
     MOCK_METHOD(common::PhoneNumber, getCallRecipient, (), (const, override));
+    MOCK_METHOD(std::string, getCallText, (), (const, override));
+    MOCK_METHOD(void, clearIncomingCallText, (), (override));
+    MOCK_METHOD(void, clearOutgoingCallText, (), (override));
+    MOCK_METHOD(void, appendCallText, (std::string const& message), (override));
 };
 
 }

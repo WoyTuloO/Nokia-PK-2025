@@ -41,6 +41,12 @@ public:
     virtual common::PhoneNumber getMessageRecipient() const = 0;
     virtual std::string getMessageText() const = 0;
     virtual common::PhoneNumber getCallRecipient() const = 0;
+
+    virtual std::string getCallText() const = 0;
+    virtual void clearIncomingCallText() = 0;
+    virtual void clearOutgoingCallText() = 0;
+    virtual void appendCallText(std::string const& message) = 0;
+
 };
 
 }
