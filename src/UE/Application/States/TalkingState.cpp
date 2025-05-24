@@ -25,25 +25,35 @@ TalkingState::~TalkingState()
      * states it will be done this way. 
      */
     this->context.timer.stopTimer();
+    this->context.user.clearIncomingCallText();
 }
 
-void TalkingState::handleUiAction([[maybe_unused]] std::optional<std::size_t> selectedIndex)
+void TalkingState::handleUiAction(std::optional<std::size_t> selectedIndex)
 {
-    std::string const& user_mesg = this->context.user.getCallText();
-    logger.logInfo("User sent message: ", user_mesg);
-
-    this->resetTimer();
-
-    if (!user_mesg.empty())
+    if (!selectedIndex.has_value())
     {
-        this->context.user.appendCallText(std::format("[ME]: {}", user_mesg));
-        this->context.bts.sendCallTalk(this->to, user_mesg);
-        this->context.user.clearOutgoingCallText();
-        this->logger.logDebug("Message: \"", user_mesg, "\" succesfully sent to recipient at ", this->to.value);
+        std::string const& user_mesg = this->context.user.getCallText();
+        logger.logInfo("User sent message: ", user_mesg);
+
+        this->resetTimer();
+
+        if (!user_mesg.empty())
+        {
+            this->context.user.appendCallText(std::format("[ME]: {:s}", user_mesg));
+            this->context.bts.sendCallTalk(this->to, user_mesg);
+            this->context.user.clearOutgoingCallText();
+            this->logger.logDebug(std::format("Message: \"{:s}\" succesfully sent to recipient at {:0>3d}", user_mesg, this->to.value));
+        }
+        else
+        {
+            this->logger.logInfo("Empty message: sending aborted");
+        }
     }
-    else
+    else if (selectedIndex.value() == 1LU)
     {
-        this->logger.logInfo("Empty message: sending aborted");
+        this->logger.logInfo("User accepted BTS sending UnknownRecipient");
+        this->context.timer.stopTimer();
+        this->context.setState<ConnectedState>();
     }
 }
 
@@ -51,8 +61,8 @@ void TalkingState::handleCallTalk(common::PhoneNumber to, const std::string& tex
 {
     this->resetTimer();
 
-    this->context.user.appendCallText(std::format("[{}]: {}", this->to.value, text));
-    this->logger.logDebug("Message: \"", text, "\" succesfully received from caller at ", this->to.value);
+    this->context.user.appendCallText(std::format("[{:0>3d}]: {:s}", this->to.value, text));
+    this->logger.logDebug(std::format("Message: \"{:s}\" succesfully received from caller at {:0>3d}", text, this->to.value));
 }
 
 void TalkingState::handleUiBack()
@@ -75,9 +85,12 @@ void TalkingState::handleCallDropped(common::PhoneNumber from)
 
 void TalkingState::handleUnknownRecipient(common::PhoneNumber from)
 {
+    using namespace std::chrono_literals;
+
     logger.logInfo("Peer not connected to BTS");
     this->context.timer.stopTimer();
-    TODO(showPartnerNotAvailable);
+    this->context.timer.startTimer(5s);
+    this->context.user.showAlertPeerUnknownRecipient(from);
     context.setState<ConnectedState>();
 }
 
