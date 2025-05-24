@@ -17,6 +17,11 @@ class OutgoingDiallingState : public BaseState
 {
 public:
     OutgoingDiallingState(Context& context, common::PhoneNumber to);
+    ~OutgoingDiallingState();
+    OutgoingDiallingState(OutgoingDiallingState const& o) = default;
+    OutgoingDiallingState& operator=(OutgoingDiallingState const& o) = default;
+
+
     void handleUiAction(std::optional<std::size_t> selectedIndex) override;
     void handleUiBack() override;
     void handleTimeout() override;

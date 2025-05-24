@@ -3,6 +3,8 @@
 #include "TalkingState.hpp"
 #include "Utils/todo.h"
 
+#include <format>
+
 namespace ue
 {
 DiallingState::DiallingState(Context& context) : BaseState(context, "DiallingState")
@@ -19,12 +21,12 @@ void DiallingState::handleUiAction(std::optional<std::size_t> selectedIndex)
 
     if (!this->validateCallNumber())
     {
-        logger.logInfo("DiallingState: invalid recipient (", number_to_call, ")");
+        logger.logInfo(std::format("DiallingState: invalid recipient ({:0>3d})", number_to_call.value));
         context.user.showNotify("Error", "Invalid recipient");
         return;
     }
 
-    logger.logInfo("DiallingState: trying to call (", number_to_call, ")");
+    logger.logInfo(std::format("DiallingState: trying to call ({:0>3d})", number_to_call.value));
     this->context.setState<OutgoingDiallingState>(number_to_call);
 }
 
@@ -51,6 +53,11 @@ OutgoingDiallingState::OutgoingDiallingState(Context& context, common::PhoneNumb
     this->context.bts.sendCallRequest(number_to_call);
     this->context.timer.startTimer(60s);
     this->context.user.showCallInProgress(this->number_to_call);
+}
+
+OutgoingDiallingState::~OutgoingDiallingState()
+{
+    this->context.timer.stopTimer();
 }
 
 void OutgoingDiallingState::handleUiAction(std::optional<std::size_t> selectedIndex)
