@@ -36,10 +36,20 @@ void DiallingState::handleUiBack()
     this->context.setState<ConnectedState>();
 }
 
+void DiallingState::handleMessageReceive(common::PhoneNumber from, std::string text)
+{
+    this->logger.logDebug("4.2.7.3 UE receives SMS, while sending Call Request");
+
+    logger.logInfo("DiallingState: incoming SMS from ", from);
+    context.smsStorage.addMessage(from, text);
+}
+
+
 constexpr bool DiallingState::validateCallNumber() const noexcept
 {
     return this->context.user.getCallRecipient().isValid();
 }
+
 
 }
 
@@ -62,7 +72,16 @@ OutgoingDiallingState::~OutgoingDiallingState()
 
 void OutgoingDiallingState::handleUiAction(std::optional<std::size_t> selectedIndex)
 {
-    this->logger.logDebug("Accepting while calling does nothing - ignoring...");
+    if (!selectedIndex.has_value())
+    {
+        this->logger.logDebug("Accepting while calling does nothing - ignoring...");
+    }
+    else if (selectedIndex.value() == 1LU)
+    {
+        this->logger.logInfo("User accepted BTS sending UnknownRecipient");
+        this->context.timer.stopTimer();
+        this->context.setState<ConnectedState>();
+    }
 }
 
 void OutgoingDiallingState::handleUiBack()
@@ -96,10 +115,20 @@ void OutgoingDiallingState::handleCallDropped(common::PhoneNumber from)
 
 void OutgoingDiallingState::handleUnknownRecipient(common::PhoneNumber from)
 {
+    using namespace std::chrono_literals;
+
     logger.logInfo("Recipient not found");
     this->context.timer.stopTimer();
-    TODO(showPartnerNotAvailable)
-    this->context.setState<ConnectedState>();
+    this->context.timer.startTimer(5s);
+    this->context.user.showAlertPeerUnknownRecipient(from);
+}
+
+void DiallingState::handleMessageReceive(common::PhoneNumber from, std::string text)
+{
+    this->logger.logDebug("4.2.7.3 UE receives SMS, while sending Call Request");
+
+    logger.logInfo("OutgoingDiallingState: incoming SMS from ", from);
+    context.smsStorage.addMessage(from, text);
 }
 
 }
