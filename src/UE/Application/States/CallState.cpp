@@ -1,6 +1,7 @@
 #include "CallState.hpp"
 #include "ConnectedState.hpp"
 #include "TalkingState.hpp"
+#include "IncomingCallState.hpp"
 #include "Utils/todo.h"
 
 #include <format>
@@ -44,6 +45,13 @@ void DiallingState::handleMessageReceive(common::PhoneNumber from, std::string t
     context.smsStorage.addMessage(from, text);
 }
 
+void OutgoingDiallingState::handleCallRequest(common::PhoneNumber from)
+{
+    this->logger.logDebug("4.2.7.4 UE receives Call Request, while sending Call Request");
+    this->logger.logInfo(std::format("Call request from number: {:0>3}, dropping call composing", from.value));
+
+    this->context.setState<IncomingCallState>(from);
+}
 
 constexpr bool DiallingState::validateCallNumber() const noexcept
 {
@@ -123,12 +131,22 @@ void OutgoingDiallingState::handleUnknownRecipient(common::PhoneNumber from)
     this->context.user.showAlertPeerUnknownRecipient(from);
 }
 
-void DiallingState::handleMessageReceive(common::PhoneNumber from, std::string text)
+void OutgoingDiallingState::handleMessageReceive(common::PhoneNumber from, std::string text)
 {
     this->logger.logDebug("4.2.7.3 UE receives SMS, while sending Call Request");
 
     logger.logInfo("OutgoingDiallingState: incoming SMS from ", from);
     context.smsStorage.addMessage(from, text);
+}
+
+void OutgoingDiallingState::handleCallRequest(common::PhoneNumber from)
+{
+    this->logger.logDebug("4.2.7.4 UE receives Call Request, while sending Call Request");
+    this->logger.logInfo(std::format("Call request from number: {:0>3}, dropping current call with {:0>3}", from.value, this->number_to_call.value));
+
+    this->context.timer.stopTimer();
+    this->context.bts.sendCallDropped(this->number_to_call);
+    this->context.setState<IncomingCallState>(from);
 }
 
 }
