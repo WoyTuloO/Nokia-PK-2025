@@ -15,7 +15,7 @@ IncomingCallState::IncomingCallState(Context& context, common::PhoneNumber calle
     context.timer.startTimer(30s);
 }
 
-void IncomingCallState::handleUiAction([[gnu::unused]] std::optional<std::size_t> selectedIndex)
+void IncomingCallState::handleUiAction([[maybe_unused]] std::optional<std::size_t> selectedIndex)
 {
     logger.logInfo("User tapped: Accept Call");
     acceptCall();
