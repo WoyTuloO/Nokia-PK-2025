@@ -21,6 +21,7 @@ public:
     void handleUnknownRecipient(common::PhoneNumber from) override;
     void handleCallTalk(common::PhoneNumber to, const std::string& text) override;
     void handleUiAction(std::optional<std::size_t> selectedIndex) override;
+    void handleMessageReceive(common::PhoneNumber from, std::string text) override;
 
 private:
     common::PhoneNumber to;

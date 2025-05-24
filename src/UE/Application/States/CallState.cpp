@@ -45,7 +45,7 @@ void DiallingState::handleMessageReceive(common::PhoneNumber from, std::string t
     context.smsStorage.addMessage(from, text);
 }
 
-void OutgoingDiallingState::handleCallRequest(common::PhoneNumber from)
+void DiallingState::handleCallRequest(common::PhoneNumber from)
 {
     this->logger.logDebug("4.2.7.4 UE receives Call Request, while sending Call Request");
     this->logger.logInfo(std::format("Call request from number: {:0>3}, dropping call composing", from.value));

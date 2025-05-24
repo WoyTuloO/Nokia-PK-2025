@@ -72,8 +72,13 @@ void TalkingState::handleUiBack()
 
 void TalkingState::handleCallRequest(common::PhoneNumber from)
 {
+    logger.logDebug("4.2.9.4 UE receives Call Request, while having Call (Talking)");
     logger.logInfo("Drop new call, while talking: ", from);
-    context.bts.sendCallDropped(from);
+
+    if (from == this->to)
+    {
+        context.bts.sendCallDropped(from);
+    }
 }
 
 void TalkingState::handleCallDropped(common::PhoneNumber from)
@@ -91,6 +96,14 @@ void TalkingState::handleUnknownRecipient(common::PhoneNumber from)
     this->context.timer.stopTimer();
     this->context.timer.startTimer(5s);
     this->context.user.showAlertPeerUnknownRecipient(from);
+}
+
+void TalkingState::handleMessageReceive(common::PhoneNumber from, std::string text)
+{
+    this->logger.logDebug("4.2.9.3 UE receives SMS, while having Call (Talking)");
+
+    logger.logInfo("TalkingState: incoming SMS from ", from);
+    context.smsStorage.addMessage(from, text);
 }
 
 void TalkingState::handleTimeout()
