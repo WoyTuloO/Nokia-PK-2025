@@ -20,7 +20,8 @@ namespace ue{
             Call_compose,       //7
             Call_outgoing,      //8
             Call_incoming,      //9
-            Call_talk           //10
+            Call_talk,          //10
+            Call_alert_UR       //11
         };
     }
 

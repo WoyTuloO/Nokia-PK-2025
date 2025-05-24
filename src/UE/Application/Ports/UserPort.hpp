@@ -39,6 +39,7 @@ public:
     void showCallTalkInterface() override;
     void showEndedCall(const common::PhoneNumber& otherPhoneNumber, const std::string& reason) override;
     void showCallFailed(const common::PhoneNumber& otherPhoneNumber, const std::string& errorMessage) override;
+    void showAlertPeerUnknownRecipient(const common::PhoneNumber& otherPhoneNumber) override;
 
     void showCallMenu() override;
 

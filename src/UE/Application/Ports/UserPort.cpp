@@ -147,7 +147,7 @@ void UserPort::showIncomingCall(const common::PhoneNumber &caller)
     logger.logInfo("Showing incoming call from: ", caller);
     auto &mode = this->gui.setAlertMode();
 
-    mode.setText(std::format("INCOMING CALL\n[{}]", caller.value));
+    mode.setText(std::format("INCOMING CALL\n[{:0>3d}]", caller.value));
 }
 
 void UserPort::showCallTalkInterface()
@@ -163,7 +163,7 @@ void UserPort::showCallInProgress(const common::PhoneNumber &otherPhoneNumber)
     logger.logInfo("Showing call in progress with: ", otherPhoneNumber);
     auto &mode = this->gui.setAlertMode();
 
-    mode.setText(std::format("CALLING\n[{}]", otherPhoneNumber.value));
+    mode.setText(std::format("CALLING\n[{:0>3d}]", otherPhoneNumber.value));
 }
 
 void UserPort::showEndedCall(const common::PhoneNumber &otherPhoneNumber, const std::string &reason)
@@ -174,6 +174,18 @@ void UserPort::showEndedCall(const common::PhoneNumber &otherPhoneNumber, const 
 void UserPort::showCallFailed(const common::PhoneNumber &otherPhoneNumber, const std::string &errorMessage)
 {
     logger.logInfo("Showing failed call with: ", otherPhoneNumber, " error: ", errorMessage);
+}
+
+void UserPort::showAlertPeerUnknownRecipient(const common::PhoneNumber& otherPhoneNumber)
+{
+    currentViewMode = view_mode::Call_alert_UR;
+    logger.logInfo(std::format("BTS does not recognize this phone number: {:0>3d}", otherPhoneNumber.value));
+
+    auto& mode = this->gui.setAlertMode();
+
+    mode.setText(std::format("Unknown peer\n"
+                             "[{:0>3d}]"
+                             "\nPeer you tried to call probably disconnected", otherPhoneNumber.value));
 }
 
 void UserPort::showCallMenu()
@@ -255,6 +267,12 @@ void UserPort::acceptCallback()
         {
             logger.logDebug("Send message to other caller - Send message");
             selectedIndexOpt = std::nullopt;
+        }
+        break;
+    case view_mode::Call_alert_UR:;
+        {
+            logger.logDebug("Tried connecting to peer BTS couldn't find");
+            selectedIndexOpt = 1UL;
         }
         break;
     TODO(Decide on these view modes)
