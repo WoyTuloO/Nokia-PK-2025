@@ -91,7 +91,6 @@ void TalkingState::handleUnknownRecipient(common::PhoneNumber from)
     this->context.timer.stopTimer();
     this->context.timer.startTimer(5s);
     this->context.user.showAlertPeerUnknownRecipient(from);
-    context.setState<ConnectedState>();
 }
 
 void TalkingState::handleTimeout()

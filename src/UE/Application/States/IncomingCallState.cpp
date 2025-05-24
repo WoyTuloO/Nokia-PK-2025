@@ -40,6 +40,14 @@ void IncomingCallState::handleCallDropped(common::PhoneNumber from)
     context.setState<ConnectedState>();
 }
 
+void IncomingCallState::handleMessageReceive(common::PhoneNumber from, std::string text)
+{
+    this->logger.logDebug("4.2.6.3 UE receives SMS, while receiving CallRequest");
+
+    logger.logInfo("IncomingCallState: incoming SMS from ", from);
+    context.smsStorage.addMessage(from, text);
+}
+
 void IncomingCallState::acceptCall()
 {
     logger.logInfo("Call accepted");

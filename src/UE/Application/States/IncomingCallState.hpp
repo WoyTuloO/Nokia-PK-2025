@@ -10,6 +10,7 @@ public:
     void handleUiBack() override;
     void handleTimeout() override;
     void handleCallDropped(common::PhoneNumber from) override;
+    void handleMessageReceive(common::PhoneNumber from, std::string text) override;
 
 private:
     common::PhoneNumber callerNumber;
