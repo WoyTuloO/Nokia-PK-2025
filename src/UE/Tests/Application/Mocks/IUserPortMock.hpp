@@ -43,6 +43,7 @@ public:
                 (override));
 
     MOCK_METHOD(void, showCallMenu, (), (override));
+    MOCK_METHOD(void, showAlertPeerUnknownRecipient, (const common::PhoneNumber& otherPhoneNumber), (override));
 
     MOCK_METHOD(common::PhoneNumber, getMessageRecipient, (), (const, final));
     MOCK_METHOD(std::string, getMessageText, (), (const, final));
