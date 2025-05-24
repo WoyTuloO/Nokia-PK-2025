@@ -251,7 +251,13 @@ void UserPort::acceptCallback()
             selectedIndexOpt = std::nullopt;
         }
         break;
-        TODO(Decide on these view modes)
+    case view_mode::Call_talk:;
+        {
+            logger.logDebug("Send message to other caller - Send message");
+            selectedIndexOpt = std::nullopt;
+        }
+        break;
+    TODO(Decide on these view modes)
     case view_mode::Message_view:;
         [[fallthrough]];
     case view_mode::Call_menu:;
