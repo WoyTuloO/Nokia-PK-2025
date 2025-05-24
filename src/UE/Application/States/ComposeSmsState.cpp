@@ -1,6 +1,7 @@
 #include "ComposeSmsState.hpp"
 #include "ConnectedState.hpp"
 #include "NotConnectedState.hpp"
+#include "IncomingCallState.hpp"
 
 namespace ue {
 
@@ -70,6 +71,14 @@ void ComposeSmsState::onIncomingSms(common::PhoneNumber from, const std::string&
 void ComposeSmsState::handleMessageSentResult(common::PhoneNumber to, bool)
 {
     logger.logInfo("Sms sent result for: ", to, " received while composing - ignoring");
+}
+
+void ComposeSmsState::handleCallRequest(common::PhoneNumber from)
+{
+    logger.logDebug("4.2.5.4 UE receives Call Request, while viewing SMS/SMS list");
+    logger.logInfo("Incoming call - overriding and switching to IncomingCallState");
+
+    context.setState<IncomingCallState>(from);
 }
 
 }

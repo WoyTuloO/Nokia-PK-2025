@@ -16,6 +16,7 @@ public:
     void handleDisconnected() override;
     void handleMessageReceive(common::PhoneNumber from, std::string text) override;
     void handleMessageSentResult(common::PhoneNumber to, bool success) override;
+    void handleCallRequest(common::PhoneNumber from) override;
 
 private:
     void validateAndSendSms();
