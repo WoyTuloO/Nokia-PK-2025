@@ -11,6 +11,7 @@ public:
     void handleUiBack() override;
     void handleMessageReceive(common::PhoneNumber from, std::string text) override;
     void handleCallRequest(common::PhoneNumber from) override;
+    void handleDisconnected() override;
 private:
     [[nodiscard]] constexpr inline bool validateCallNumber() const noexcept;
 };
@@ -31,6 +32,7 @@ public:
     void handleCallDropped(common::PhoneNumber from) override;
     void handleUnknownRecipient(common::PhoneNumber from) override;
     void handleMessageReceive(common::PhoneNumber from, std::string text) override;
+    void handleDisconnected() override;
 private:
     common::PhoneNumber number_to_call;
 };

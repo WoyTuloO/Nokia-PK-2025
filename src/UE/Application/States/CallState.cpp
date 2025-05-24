@@ -2,6 +2,7 @@
 #include "ConnectedState.hpp"
 #include "TalkingState.hpp"
 #include "IncomingCallState.hpp"
+#include "NotConnectedState.hpp"
 #include "Utils/todo.h"
 
 #include <format>
@@ -51,6 +52,15 @@ void DiallingState::handleCallRequest(common::PhoneNumber from)
     this->logger.logInfo(std::format("Call request from number: {:0>3}, dropping call composing", from.value));
 
     this->context.setState<IncomingCallState>(from);
+}
+
+void DiallingState::handleDisconnected()
+{
+    this->logger.logDebug("4.2.7.2 UE connection to BTS was dropped while sending Call Request");
+
+    this->logger.logError("Unexpectedly disconnected from BTS");
+    this->context.timer.stopTimer();
+    this->context.setState<NotConnectedState>();
 }
 
 constexpr bool DiallingState::validateCallNumber() const noexcept
@@ -147,6 +157,15 @@ void OutgoingDiallingState::handleCallRequest(common::PhoneNumber from)
     this->context.timer.stopTimer();
     this->context.bts.sendCallDropped(this->number_to_call);
     this->context.setState<IncomingCallState>(from);
+}
+
+void OutgoingDiallingState::handleDisconnected()
+{
+    this->logger.logDebug("4.2.7.2 UE connection to BTS was dropped while sending Call Request");
+
+    this->logger.logError("Unexpectedly disconnected from BTS");
+    this->context.timer.stopTimer();
+    this->context.setState<NotConnectedState>();
 }
 
 }
