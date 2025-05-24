@@ -1,6 +1,7 @@
 #include "IncomingCallState.hpp"
 #include "ConnectedState.hpp"
 #include "TalkingState.hpp"
+#include "NotConnectedState.hpp"
 
 namespace ue
 {
@@ -47,6 +48,16 @@ void IncomingCallState::handleMessageReceive(common::PhoneNumber from, std::stri
     logger.logInfo("IncomingCallState: incoming SMS from ", from);
     context.smsStorage.addMessage(from, text);
 }
+
+void IncomingCallState::handleDisconnected()
+{
+    this->logger.logDebug("4.2.6.2 UE connection to BTS was dropped while receiving CallRequest");
+
+    this->logger.logError("Unexpectedly disconnected from BTS");
+    this->context.timer.stopTimer();
+    this->context.setState<NotConnectedState>();
+}
+
 
 void IncomingCallState::acceptCall()
 {
