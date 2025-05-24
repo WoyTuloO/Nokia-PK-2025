@@ -22,7 +22,6 @@ protected:
     StrictMock<IUserPortMock> userPortMock;
     StrictMock<ITimerPortMock> timerPortMock;
 
-    SmsStorage smsStorage;
     Context context;
     std::unique_ptr<IncomingCallState> state;
 
@@ -53,6 +52,61 @@ TEST_F(IncomingCallStateTestSuite, UserAcceptsCallWithinTimeout)
     EXPECT_CALL(timerPortMock, stopTimer());
 
     state->handleUiAction(std::nullopt);
+}
+
+TEST_F(IncomingCallStateTestSuite, UserRejectsCall)
+{
+    EXPECT_CALL(userPortMock, showIncomingCall(caller));
+    EXPECT_CALL(timerPortMock, startTimer(DurationEq(std::chrono::seconds(30))));
+
+    state = std::make_unique<IncomingCallState>(context, caller);
+
+    EXPECT_CALL(btsPortMock, sendCallDropped(caller));
+    EXPECT_CALL(timerPortMock, stopTimer());
+
+    state->handleUiBack();
+}
+
+TEST_F(IncomingCallStateTestSuite, CallTimeoutNoUserResponse)
+{
+    EXPECT_CALL(userPortMock, showIncomingCall(caller));
+    EXPECT_CALL(timerPortMock, startTimer(DurationEq(std::chrono::seconds(30))));
+
+    state = std::make_unique<IncomingCallState>(context, caller);
+
+    EXPECT_CALL(btsPortMock, sendCallDropped(caller));
+    EXPECT_CALL(timerPortMock, stopTimer());
+
+    state->handleTimeout();
+}
+
+TEST_F(IncomingCallStateTestSuite, CallDroppedByRemote)
+{
+    EXPECT_CALL(userPortMock, showIncomingCall(caller));
+    EXPECT_CALL(timerPortMock, startTimer(DurationEq(std::chrono::seconds(30))));
+
+    state = std::make_unique<IncomingCallState>(context, caller);
+
+    EXPECT_CALL(timerPortMock, stopTimer());
+
+    state->handleCallDropped(caller);
+}
+
+TEST_F(IncomingCallStateTestSuite, CallTalkingSendReceive)
+{
+    EXPECT_CALL(userPortMock, showIncomingCall(caller));
+    EXPECT_CALL(timerPortMock, startTimer(DurationEq(std::chrono::seconds(30))));
+
+    state = std::make_unique<IncomingCallState>(context, caller);
+
+    EXPECT_CALL(btsPortMock, sendCallAccepted(caller));
+    EXPECT_CALL(timerPortMock, stopTimer());
+    state->handleUiAction(std::nullopt);
+
+    EXPECT_CALL(btsPortMock, sendCallTalk(caller, "Hello"));
+    state->handleCallTalk(caller, "Hello");
+
+    state->handleCallTalk(caller, "Hi back");
 }
 
 }
