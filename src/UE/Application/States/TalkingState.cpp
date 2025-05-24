@@ -12,6 +12,7 @@ TalkingState::TalkingState(Context& context, common::PhoneNumber to) : BaseState
 
     logger.logInfo("Having call with: ", to);
     context.user.showCallTalkInterface();
+    this->context.user.clearIncomingCallText();
     this->context.timer.startTimer(2min);
 }
 
@@ -25,7 +26,6 @@ TalkingState::~TalkingState()
      * states it will be done this way. 
      */
     this->context.timer.stopTimer();
-    this->context.user.clearIncomingCallText();
 }
 
 void TalkingState::handleUiAction(std::optional<std::size_t> selectedIndex)
