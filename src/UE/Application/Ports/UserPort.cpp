@@ -20,8 +20,8 @@ void UserPort::start(IEventsHandler &handler)
 {
     this->handler = &handler;
     gui.setTitle("Nokia " + to_string(phoneNumber));
-    gui.setAcceptCallback(std::bind(&UserPort::acceptCallback, this));
-    gui.setRejectCallback(std::bind(&UserPort::rejectCallback, this));
+    gui.setAcceptCallback([this] { acceptCallback(); });
+    gui.setRejectCallback([this] { rejectCallback(); });
 }
 
 void UserPort::stop()
@@ -201,8 +201,10 @@ void UserPort::showCallMenu()
 
 void UserPort::acceptCallback()
 {
-    if (!handler)
+    if (handler == nullptr)
+    {
         return;
+    }
 
     std::optional<std::size_t> selectedIndexOpt;
 
@@ -297,8 +299,11 @@ void UserPort::acceptCallback()
 
 void UserPort::rejectCallback()
 {
-    if (!handler)
+    if (handler == nullptr)
+    {
         return;
+    }
+    
     logger.logDebug("UI Action (Reject/Back), Mode: ", common::enumUnderlyingValue(currentViewMode));
 
     handler->handleUiBack();

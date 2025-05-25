@@ -15,7 +15,7 @@ DiallingState::DiallingState(Context& context) : BaseState(context, "DiallingSta
     this->context.user.showCallComp();
 };
 
-void DiallingState::handleUiAction(std::optional<std::size_t> selectedIndex)
+void DiallingState::handleUiAction([[maybe_unused]] std::optional<std::size_t> selectedIndex)
 {
     logger.logInfo("DiallingState: User tapped Call");
 
@@ -145,7 +145,7 @@ void OutgoingDiallingState::handleCallDropped(common::PhoneNumber from)
     }
 }
 
-void OutgoingDiallingState::handleUnknownRecipient(common::PhoneNumber from)
+void OutgoingDiallingState::handleUnknownRecipient([[maybe_unused]] common::PhoneNumber from)
 {
     using namespace std::chrono_literals;
 

@@ -43,10 +43,10 @@ public:
 
     void showCallMenu() override;
 
-    common::PhoneNumber getMessageRecipient() const override;
-    std::string getMessageText() const override;
-    common::PhoneNumber getCallRecipient() const override;
-    std::string getCallText() const override;
+    [[nodiscard]] common::PhoneNumber getMessageRecipient() const override;
+    [[nodiscard]] std::string getMessageText() const override;
+    [[nodiscard]] common::PhoneNumber getCallRecipient() const override;
+    [[nodiscard]] std::string getCallText() const override;
     void clearIncomingCallText() override;
     void clearOutgoingCallText() override;
     void appendCallText(std::string const& message) override;
@@ -58,6 +58,8 @@ private:
     void messageCallback();
 
     common::PrefixedLogger logger;
+    // IUeGui should probably be unique_ptr
+    // or maybe constructor should take rvalues?
     IUeGui& gui;
     common::PhoneNumber phoneNumber;
     IEventsHandler* handler = nullptr;

@@ -20,7 +20,7 @@ public:
 
 private:
     void validateAndSendSms();
-    bool inputsAreValid(const common::PhoneNumber& recipient, const std::string& body) const;
+    [[nodiscard]] bool inputsAreValid(const common::PhoneNumber& recipient, const std::string& body) const;
     void onIncomingSms(common::PhoneNumber from, const std::string& body);
 };
 

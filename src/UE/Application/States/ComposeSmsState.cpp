@@ -12,7 +12,7 @@ ComposeSmsState::ComposeSmsState(Context& ctx)
     context.user.showMessageComp();
 }
 
-void ComposeSmsState::handleUiAction(std::optional<std::size_t>)
+void ComposeSmsState::handleUiAction([[maybe_unused]] std::optional<std::size_t> selectedIndex)
 {
     logger.logInfo("ComposeSmsState: user tapped Send");
     validateAndSendSms();
@@ -68,7 +68,7 @@ void ComposeSmsState::onIncomingSms(common::PhoneNumber from, const std::string&
     context.user.showNewMessage();
 }
 
-void ComposeSmsState::handleMessageSentResult(common::PhoneNumber to, bool)
+void ComposeSmsState::handleMessageSentResult(common::PhoneNumber to, [[maybe_unused]] bool success)
 {
     logger.logInfo("Sms sent result for: ", to, " received while composing - ignoring");
 }

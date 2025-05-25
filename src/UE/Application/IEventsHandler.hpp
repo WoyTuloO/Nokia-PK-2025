@@ -9,7 +9,7 @@
 namespace ue{
     namespace view_details {
 
-        enum class GuiViewMode {
+        enum class GuiViewMode : std::uint8_t {
             Default,            //0
             Menu,               //1
             Message_list,       //2

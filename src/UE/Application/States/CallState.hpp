@@ -13,7 +13,7 @@ public:
     void handleCallRequest(common::PhoneNumber from) override;
     void handleDisconnected() override;
 private:
-    [[nodiscard]] constexpr inline bool validateCallNumber() const noexcept;
+    [[nodiscard]] constexpr bool validateCallNumber() const noexcept;
 };
 
 class OutgoingDiallingState : public BaseState

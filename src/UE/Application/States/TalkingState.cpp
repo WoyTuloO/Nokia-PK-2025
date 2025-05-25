@@ -104,7 +104,7 @@ void TalkingState::handleCallDropped(common::PhoneNumber from)
     }
 }
 
-void TalkingState::handleUnknownRecipient(common::PhoneNumber from)
+void TalkingState::handleUnknownRecipient([[maybe_unused]] common::PhoneNumber from)
 {
     using namespace std::chrono_literals;
 
