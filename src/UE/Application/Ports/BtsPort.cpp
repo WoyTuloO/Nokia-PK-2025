@@ -62,7 +62,8 @@ void BtsPort::handleMessage(BinaryMessage msg)
             break;
         }
         case common::MessageId::CallTalk: {
-            handler->handleCallTalk(to, reader.readRemainingText());
+            // Why was it the only one to forward receiver's number??
+            handler->handleCallTalk(from, reader.readRemainingText());
             break;
         }
         case common::MessageId::CallAccepted: {
