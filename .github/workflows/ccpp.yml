@@ -54,7 +54,7 @@ jobs:
         CPP_LINTER_PR_REVIEW_SUMMARY_ONLY: true
       with:
         style: 'file'  # Use .clang-format config file
-        tidy-checks: 'bugprone-*,performance-*,readability-*,modernize-*,clang-analyzer-*,cppcoreguidelines-*'
+        tidy-checks: 'bugprone-*,performance-*,readability-*,modernize-*,clang-analyzer-*,cppcoreguidelines-*,-readability-identifier-length*,-modernize-use-trailing-return-type*'
         # only 'update' a single comment in a pull request thread.
         thread-comments: ${{ github.event_name == 'pull_request' && 'update' }}
         format-review: true
