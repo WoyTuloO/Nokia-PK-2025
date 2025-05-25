@@ -20,7 +20,7 @@ class OutgoingDiallingState : public BaseState
 {
 public:
     OutgoingDiallingState(Context& context, common::PhoneNumber to);
-    ~OutgoingDiallingState();
+    ~OutgoingDiallingState() override;
     OutgoingDiallingState(OutgoingDiallingState const& o) = default;
     OutgoingDiallingState& operator=(OutgoingDiallingState const& o) = default;
 
