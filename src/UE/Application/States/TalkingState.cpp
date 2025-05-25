@@ -44,7 +44,7 @@ void TalkingState::handleUiAction(std::optional<std::size_t> selectedIndex)
             this->context.user.appendCallText(std::format("[ME]: {:s}", user_mesg));
             this->context.bts.sendCallTalk(this->to, user_mesg);
             this->context.user.clearOutgoingCallText();
-            this->logger.logDebug(std::format("Message: \"{:s}\" succesfully sent to recipient at {:0>3d}", user_mesg, this->to.value));
+            this->logger.logDebug(std::format("Message: \"{:s}\" succesfully sent to recipient at [{:0>3d}]", user_mesg, this->to.value));
         }
         else
         {
@@ -61,10 +61,17 @@ void TalkingState::handleUiAction(std::optional<std::size_t> selectedIndex)
 
 void TalkingState::handleCallTalk(common::PhoneNumber to, const std::string& text)
 {
-    this->resetTimer();
-
-    this->context.user.appendCallText(std::format("[{:0>3d}]: {:s}", this->to.value, text));
-    this->logger.logDebug(std::format("Message: \"{:s}\" succesfully received from caller at {:0>3d}", text, this->to.value));
+    if (this->to == to)
+    {
+        this->resetTimer();
+    
+        this->context.user.appendCallText(std::format("[{:0>3d}]: {:s}", this->to.value, text));
+        this->logger.logDebug(std::format("Message: \"{:s}\" succesfully received from caller at {:0>3d}", text, this->to.value));
+    }
+    else
+    {
+        logger.logDebug(std::format("Number [{:0>3}] tried to send unwanted message while in call with [{:0>3}]. Ignoring", to.value, this->to.value));
+    }
 }
 
 void TalkingState::handleUiBack()
@@ -77,7 +84,7 @@ void TalkingState::handleCallRequest(common::PhoneNumber from)
     logger.logDebug("4.2.9.4 UE receives Call Request, while having Call (Talking)");
     logger.logInfo("Drop new call, while talking: ", from);
 
-    if (from == this->to)
+    if (from != this->to)
     {
         context.bts.sendCallDropped(from);
     }
@@ -85,9 +92,16 @@ void TalkingState::handleCallRequest(common::PhoneNumber from)
 
 void TalkingState::handleCallDropped(common::PhoneNumber from)
 {
-    logger.logInfo("Peer explicitly disconnected");
-    this->context.timer.stopTimer();
-    context.setState<ConnectedState>();
+    if (this->to == from)
+    {
+        logger.logInfo("Peer explicitly disconnected");
+        this->context.timer.stopTimer();
+        context.setState<ConnectedState>();
+    }
+    else
+    {
+        logger.logDebug(std::format("Number [{:0>3}] tried to remotely drop current call with [{:0>3}]. Ignoring", from.value, this->to.value));
+    }
 }
 
 void TalkingState::handleUnknownRecipient(common::PhoneNumber from)

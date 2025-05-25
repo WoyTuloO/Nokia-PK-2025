@@ -119,26 +119,47 @@ void OutgoingDiallingState::handleTimeout()
 
 void OutgoingDiallingState::handleCallAccepted(common::PhoneNumber from)
 {
-    logger.logInfo("Successfully connected");
-    this->context.timer.stopTimer();
-    this->context.setState<TalkingState>(from);
+    if (this->number_to_call == from)
+    {
+        logger.logInfo("Successfully connected");
+        this->context.timer.stopTimer();
+        this->context.setState<TalkingState>(from);
+    }
+    else
+    {
+        logger.logDebug(std::format("Number [{:0>3}] tried to intercept a call with [{:0>3}]. Ignoring", from.value, this->number_to_call.value));
+    }
 }
 
 void OutgoingDiallingState::handleCallDropped(common::PhoneNumber from)
 {
-    logger.logInfo("Callee dropped the call");
-    this->context.timer.stopTimer();
-    this->context.setState<ConnectedState>();
+    if (this->number_to_call == from)
+    {
+        logger.logInfo("Callee dropped the call");
+        this->context.timer.stopTimer();
+        this->context.setState<ConnectedState>();
+    }
+    else
+    {
+        logger.logDebug(std::format("Number [{:0>3}] tried to remotely drop current call with [{:0>3}]. Ignoring", from.value, this->number_to_call.value));
+    }
 }
 
 void OutgoingDiallingState::handleUnknownRecipient(common::PhoneNumber from)
 {
     using namespace std::chrono_literals;
 
-    logger.logInfo("Recipient not found");
-    this->context.timer.stopTimer();
-    this->context.timer.startTimer(5s);
-    this->context.user.showAlertPeerUnknownRecipient(from);
+    if (this->number_to_call == from)
+    {
+        logger.logInfo("Recipient not found");
+        this->context.timer.stopTimer();
+        this->context.timer.startTimer(5s);
+        this->context.user.showAlertPeerUnknownRecipient(from);
+    }
+    else
+    {
+        logger.logDebug(std::format("Number [{:0>3}] sent unwanted UnknownRecipient message while calling [{:0>3}]. Ignoring", from.value, this->number_to_call.value));
+    }
 }
 
 void OutgoingDiallingState::handleMessageReceive(common::PhoneNumber from, std::string text)
