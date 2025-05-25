@@ -1,6 +1,8 @@
 #include "TalkingState.hpp"
 #include "ConnectedState.hpp"
+#include "NotConnectedState.hpp"
 #include "Utils/todo.h"
+
 #include <format>
 
 namespace ue
@@ -111,6 +113,15 @@ void TalkingState::handleTimeout()
     logger.logInfo("Connection timed out from inactivity");
     this->context.bts.sendCallDropped(this->to);
     context.setState<ConnectedState>();
+}
+
+void TalkingState::handleDisconnected()
+{
+    this->logger.logDebug("4.2.9.2 UE connection to BTS was dropped while having Call (Talking)");
+
+    this->logger.logError("Unexpectedly disconnected from BTS");
+    this->context.timer.stopTimer();
+    this->context.setState<NotConnectedState>();
 }
 
 void TalkingState::endCall()
