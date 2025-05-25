@@ -11,6 +11,7 @@ public:
     void handleTimeout() override;
     void handleCallDropped(common::PhoneNumber from) override;
     void handleMessageReceive(common::PhoneNumber from, std::string text) override;
+    void handleCallRequest(common::PhoneNumber from) override;
     void handleDisconnected() override;
 
 private:

@@ -36,9 +36,16 @@ void IncomingCallState::handleTimeout()
 
 void IncomingCallState::handleCallDropped(common::PhoneNumber from)
 {
-    logger.logInfo("Call dropped by remote peer");
-    context.timer.stopTimer();
-    context.setState<ConnectedState>();
+    if (this->callerNumber == from)
+    {
+        logger.logInfo("Call dropped by remote peer");
+        context.timer.stopTimer();
+        context.setState<ConnectedState>();
+    }
+    else
+    {
+        logger.logDebug(std::format("Number [{:0>3}] tried to remotely drop current call with [{:0>3}]. Ignoring", from.value, this->callerNumber.value));
+    }
 }
 
 void IncomingCallState::handleMessageReceive(common::PhoneNumber from, std::string text)
@@ -47,6 +54,18 @@ void IncomingCallState::handleMessageReceive(common::PhoneNumber from, std::stri
 
     logger.logInfo("IncomingCallState: incoming SMS from ", from);
     context.smsStorage.addMessage(from, text);
+}
+
+void IncomingCallState::handleCallRequest(common::PhoneNumber from)
+{
+    this->logger.logDebug("4.2.6.4 UE receives subsequent Call Request");
+
+    this->logger.logInfo(std::format("Caller [{:0>3d}] sent Call request - dropping", from.value));
+
+    if (this->callerNumber != from)
+    {
+        this->context.bts.sendCallDropped(from);
+    }
 }
 
 void IncomingCallState::handleDisconnected()
