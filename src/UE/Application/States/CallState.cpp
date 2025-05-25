@@ -149,17 +149,10 @@ void OutgoingDiallingState::handleUnknownRecipient(common::PhoneNumber from)
 {
     using namespace std::chrono_literals;
 
-    if (this->number_to_call == from)
-    {
-        logger.logInfo("Recipient not found");
-        this->context.timer.stopTimer();
-        this->context.timer.startTimer(5s);
-        this->context.user.showAlertPeerUnknownRecipient(from);
-    }
-    else
-    {
-        logger.logDebug(std::format("Number [{:0>3}] sent unwanted UnknownRecipient message while calling [{:0>3}]. Ignoring", from.value, this->number_to_call.value));
-    }
+    logger.logInfo("Recipient not found");
+    this->context.timer.stopTimer();
+    this->context.timer.startTimer(5s);
+    this->context.user.showAlertPeerUnknownRecipient(this->number_to_call);
 }
 
 void OutgoingDiallingState::handleMessageReceive(common::PhoneNumber from, std::string text)

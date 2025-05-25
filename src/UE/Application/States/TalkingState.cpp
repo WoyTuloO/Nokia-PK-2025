@@ -111,7 +111,7 @@ void TalkingState::handleUnknownRecipient(common::PhoneNumber from)
     logger.logInfo("Peer not connected to BTS");
     this->context.timer.stopTimer();
     this->context.timer.startTimer(5s);
-    this->context.user.showAlertPeerUnknownRecipient(from);
+    this->context.user.showAlertPeerUnknownRecipient(this->to);
 }
 
 void TalkingState::handleMessageReceive(common::PhoneNumber from, std::string text)

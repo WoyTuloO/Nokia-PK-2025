@@ -184,8 +184,11 @@ void UserPort::showAlertPeerUnknownRecipient(const common::PhoneNumber& otherPho
     auto& mode = this->gui.setAlertMode();
 
     mode.setText(std::format("Unknown peer\n"
-                             "[{:0>3d}]"
-                             "\nPeer you tried to call probably disconnected", otherPhoneNumber.value));
+                             "[{:0>3d}]\n"
+                             "\nPeer you tried"
+                             "\nto call"
+                             "\nprobably"
+                             "\ndisconnected", otherPhoneNumber.value));
 }
 
 void UserPort::showCallMenu()
@@ -275,7 +278,7 @@ void UserPort::acceptCallback()
             selectedIndexOpt = 1UL;
         }
         break;
-    TODO(Decide on these view modes)
+    // Deprecated modes
     case view_mode::Message_view:;
         [[fallthrough]];
     case view_mode::Call_menu:;
