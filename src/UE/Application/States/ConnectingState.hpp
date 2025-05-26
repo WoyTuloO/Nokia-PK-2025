@@ -2,12 +2,13 @@
 
 #include "BaseState.hpp"
 
-namespace ue{
+namespace ue
+{
 
-class ConnectingState : public BaseState{
+class ConnectingState : public BaseState
+{
 public:
     explicit ConnectingState(Context& context);
-
 
     void handleAttachAccept() override;
     void handleAttachReject() override;
@@ -18,6 +19,5 @@ public:
 private:
     common::BtsId btsId;
 };
-
 
 }

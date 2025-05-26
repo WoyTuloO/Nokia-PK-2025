@@ -1,13 +1,15 @@
 #pragma once
 
 #include "BaseState.hpp"
-#include <optional>
 #include "Context.hpp"
 #include "SmsStorage.hpp"
+#include <optional>
 
-namespace ue {
+namespace ue
+{
 
-class ComposeSmsState : public BaseState {
+class ComposeSmsState : public BaseState
+{
 public:
     explicit ComposeSmsState(Context& context);
 

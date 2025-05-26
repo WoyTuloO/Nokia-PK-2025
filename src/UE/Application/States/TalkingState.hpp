@@ -1,9 +1,11 @@
 #pragma once
 #include "BaseState.hpp"
 
-namespace ue {
+namespace ue
+{
 
-class TalkingState : public BaseState {
+class TalkingState : public BaseState
+{
 public:
     TalkingState(Context& context, common::PhoneNumber to);
     ~TalkingState() override;
@@ -12,7 +14,7 @@ public:
      * reset timer to two minutes
      */
     TalkingState(TalkingState const& o) = default;
-    TalkingState& operator=(TalkingState const& o) = default;
+    TalkingState& operator= (TalkingState const& o) = default;
 
     void handleUiBack() override;
     void handleTimeout() override;

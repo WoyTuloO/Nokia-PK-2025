@@ -112,10 +112,11 @@ void BtsPort::sendMessage(common::PhoneNumber to, const std::string &text)
     transport.sendMessage(msg.getMessage());
 }
 
-void BtsPort::sendCallRequest(common::PhoneNumber to){
+void BtsPort::sendCallRequest(common::PhoneNumber to)
+{
     logger.logInfo("sending Call Request to: ", to);
 
-    common::OutgoingMessage msg{common::MessageId::CallRequest, phoneNumber, to};
+    common::OutgoingMessage msg{ common::MessageId::CallRequest, phoneNumber, to };
     transport.sendMessage(msg.getMessage());
 }
 
@@ -126,7 +127,7 @@ void BtsPort::sendCallDropped(common::PhoneNumber to)
     transport.sendMessage(msg.getMessage());
 }
 
-void BtsPort::sendCallTalk(common::PhoneNumber to, const std::string& text)
+void BtsPort::sendCallTalk(common::PhoneNumber to, const std::string &text)
 {
     logger.logInfo("Sending CallTalk to: ", to);
     common::OutgoingMessage msg{ common::MessageId::CallTalk, phoneNumber, to };

@@ -1,12 +1,14 @@
 #pragma once
 
+#include "Context.hpp"
 #include "IEventsHandler.hpp"
 #include "Logger/PrefixedLogger.hpp"
-#include "Context.hpp"
 
-namespace ue{
+namespace ue
+{
 
-class BaseState : public IEventsHandler{
+class BaseState : public IEventsHandler
+{
 public:
     BaseState(Context& context, const std::string& name);
     ~BaseState() override;
@@ -29,7 +31,6 @@ public:
     void handleCallTalk(common::PhoneNumber to, const std::string& text) override;
     void handleCallAccepted(common::PhoneNumber from) override;
     void handleUnknownRecipient(common::PhoneNumber from) override;
-
 
 protected:
     Context& context;

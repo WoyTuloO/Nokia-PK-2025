@@ -1,7 +1,7 @@
 #include "IncomingCallState.hpp"
 #include "ConnectedState.hpp"
-#include "TalkingState.hpp"
 #include "NotConnectedState.hpp"
+#include "TalkingState.hpp"
 
 namespace ue
 {
@@ -44,7 +44,9 @@ void IncomingCallState::handleCallDropped(common::PhoneNumber from)
     }
     else
     {
-        logger.logDebug(std::format("Number [{:0>3}] tried to remotely drop current call with [{:0>3}]. Ignoring", from.value, this->callerNumber.value));
+        logger.logDebug(std::format("Number [{:0>3}] tried to remotely drop current call with [{:0>3}]. Ignoring",
+                                    from.value,
+                                    this->callerNumber.value));
     }
 }
 
@@ -76,7 +78,6 @@ void IncomingCallState::handleDisconnected()
     this->context.timer.stopTimer();
     this->context.setState<NotConnectedState>();
 }
-
 
 void IncomingCallState::acceptCall()
 {

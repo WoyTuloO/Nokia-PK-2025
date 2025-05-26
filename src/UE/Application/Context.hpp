@@ -2,15 +2,17 @@
 
 #include "IEventsHandler.hpp"
 #include "Logger/ILogger.hpp"
-#include <memory>
-#include "SmsStorage.hpp"
 #include "Ports/IBtsPort.hpp"
-#include "Ports/IUserPort.hpp"
 #include "Ports/ITimerPort.hpp"
+#include "Ports/IUserPort.hpp"
+#include "SmsStorage.hpp"
+#include <memory>
 
-namespace ue{
+namespace ue
+{
 
-struct Context{
+struct Context
+{
     common::ILogger& logger;
     IBtsPort& bts;
     IUserPort& user;
@@ -20,8 +22,8 @@ struct Context{
     SmsStorage smsStorage;
     common::PhoneNumber myPhoneNumber;
 
-    template <typename State, typename ...Arg>
-    void setState(Arg&& ...arg)
+    template <typename State, typename... Arg>
+    void setState(Arg&&... arg)
     {
         state = std::make_unique<State>(*this, std::forward<Arg>(arg)...);
     }
