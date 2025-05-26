@@ -9,7 +9,7 @@
 namespace ue{
     namespace view_details {
 
-        enum class GuiViewMode {
+        enum class GuiViewMode : std::uint8_t {
             Default,            //0
             Menu,               //1
             Message_list,       //2
@@ -20,7 +20,8 @@ namespace ue{
             Call_compose,       //7
             Call_outgoing,      //8
             Call_incoming,      //9
-            Call_talk           //10
+            Call_talk,          //10
+            Call_alert_UR       //11
         };
     }
 

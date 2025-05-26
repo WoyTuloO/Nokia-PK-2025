@@ -2,6 +2,7 @@
 #include "ViewSmsState.hpp"
 #include "ConnectedState.hpp"
 #include "NotConnectedState.hpp"
+#include "IncomingCallState.hpp"
 
 namespace ue {
 
@@ -86,6 +87,14 @@ void ViewListSmsState::handleMessageReceive(common::PhoneNumber from, std::strin
     logger.logDebug("Stored new SMS at index=", newIndex);
     context.user.showNewMessage();
     refreshList();
+}
+
+void ViewListSmsState::handleCallRequest(common::PhoneNumber from)
+{
+    logger.logDebug("4.2.4.4 UE receives Call Request, while viewing SMS/SMS list");
+    logger.logInfo("Incoming call - overriding and switching to IncomingCallState");
+
+    context.setState<IncomingCallState>(from);
 }
 
 }

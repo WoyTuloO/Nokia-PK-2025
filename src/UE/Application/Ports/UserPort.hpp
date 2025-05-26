@@ -7,6 +7,7 @@
 #include "Messages/PhoneNumber.hpp"
 #include "SmsStorage.hpp"
 #include "UeGui/ISmsComposeMode.hpp"
+#include "UeGui/ICallMode.hpp"
 #include <optional>
 #include <vector>
 
@@ -38,12 +39,18 @@ public:
     void showCallTalkInterface() override;
     void showEndedCall(const common::PhoneNumber& otherPhoneNumber, const std::string& reason) override;
     void showCallFailed(const common::PhoneNumber& otherPhoneNumber, const std::string& errorMessage) override;
+    void showAlertPeerUnknownRecipient(const common::PhoneNumber& otherPhoneNumber) override;
 
     void showCallMenu() override;
 
-    common::PhoneNumber getMessageRecipient() const override;
-    std::string getMessageText() const override;
-    common::PhoneNumber getCallRecipient() const override;
+    [[nodiscard]] common::PhoneNumber getMessageRecipient() const override;
+    [[nodiscard]] std::string getMessageText() const override;
+    [[nodiscard]] common::PhoneNumber getCallRecipient() const override;
+    [[nodiscard]] std::string getCallText() const override;
+    void clearIncomingCallText() override;
+    void clearOutgoingCallText() override;
+    void appendCallText(std::string const& message) override;
+
 
 private:
     void acceptCallback();
@@ -51,6 +58,8 @@ private:
     void messageCallback();
 
     common::PrefixedLogger logger;
+    // IUeGui should probably be unique_ptr
+    // or maybe constructor should take rvalues?
     IUeGui& gui;
     common::PhoneNumber phoneNumber;
     IEventsHandler* handler = nullptr;

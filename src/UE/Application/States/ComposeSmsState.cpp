@@ -1,6 +1,7 @@
 #include "ComposeSmsState.hpp"
 #include "ConnectedState.hpp"
 #include "NotConnectedState.hpp"
+#include "IncomingCallState.hpp"
 
 namespace ue {
 
@@ -11,7 +12,7 @@ ComposeSmsState::ComposeSmsState(Context& ctx)
     context.user.showMessageComp();
 }
 
-void ComposeSmsState::handleUiAction(std::optional<std::size_t>)
+void ComposeSmsState::handleUiAction([[maybe_unused]] std::optional<std::size_t> selectedIndex)
 {
     logger.logInfo("ComposeSmsState: user tapped Send");
     validateAndSendSms();
@@ -67,9 +68,17 @@ void ComposeSmsState::onIncomingSms(common::PhoneNumber from, const std::string&
     context.user.showNewMessage();
 }
 
-void ComposeSmsState::handleMessageSentResult(common::PhoneNumber to, bool)
+void ComposeSmsState::handleMessageSentResult(common::PhoneNumber to, [[maybe_unused]] bool success)
 {
     logger.logInfo("Sms sent result for: ", to, " received while composing - ignoring");
+}
+
+void ComposeSmsState::handleCallRequest(common::PhoneNumber from)
+{
+    logger.logDebug("4.2.5.4 UE receives Call Request, while viewing SMS/SMS list");
+    logger.logInfo("Incoming call - overriding and switching to IncomingCallState");
+
+    context.setState<IncomingCallState>(from);
 }
 
 }

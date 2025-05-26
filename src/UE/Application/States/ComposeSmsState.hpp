@@ -16,10 +16,11 @@ public:
     void handleDisconnected() override;
     void handleMessageReceive(common::PhoneNumber from, std::string text) override;
     void handleMessageSentResult(common::PhoneNumber to, bool success) override;
+    void handleCallRequest(common::PhoneNumber from) override;
 
 private:
     void validateAndSendSms();
-    bool inputsAreValid(const common::PhoneNumber& recipient, const std::string& body) const;
+    [[nodiscard]] bool inputsAreValid(const common::PhoneNumber& recipient, const std::string& body) const;
     void onIncomingSms(common::PhoneNumber from, const std::string& body);
 };
 

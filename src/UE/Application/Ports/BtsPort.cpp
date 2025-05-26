@@ -32,7 +32,7 @@ void BtsPort::handleMessage(BinaryMessage msg)
         common::IncomingMessage reader{ msg };
         auto msgId = reader.readMessageId();
         auto from = reader.readPhoneNumber();
-        auto to = reader.readPhoneNumber();
+        [[maybe_unused]] auto to = reader.readPhoneNumber();
 
         switch (msgId)
         {
@@ -42,11 +42,15 @@ void BtsPort::handleMessage(BinaryMessage msg)
             break;
         }
         case common::MessageId::AttachResponse: {
-            bool accept = reader.readNumber<std::uint8_t>() != 0u;
+            bool accept = reader.readNumber<std::uint8_t>() != 0U;
             if (accept)
+            {
                 handler->handleAttachAccept();
+            }
             else
+            {
                 handler->handleAttachReject();
+            }
             break;
         }
         case common::MessageId::Sms: {
@@ -62,7 +66,8 @@ void BtsPort::handleMessage(BinaryMessage msg)
             break;
         }
         case common::MessageId::CallTalk: {
-            handler->handleCallTalk(to, reader.readRemainingText());
+            // Why was it the only one to forward receiver's number??
+            handler->handleCallTalk(from, reader.readRemainingText());
             break;
         }
         case common::MessageId::CallAccepted: {
@@ -93,8 +98,10 @@ void BtsPort::sendAttachRequest(common::BtsId btsId)
 
 void BtsPort::handleDisconnected()
 {
-    if (handler)
+    if (handler != nullptr)
+    {
         handler->handleDisconnected();
+    }
 }
 
 void BtsPort::sendMessage(common::PhoneNumber to, const std::string &text)

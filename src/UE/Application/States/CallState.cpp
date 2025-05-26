@@ -1,7 +1,11 @@
 #include "CallState.hpp"
 #include "ConnectedState.hpp"
 #include "TalkingState.hpp"
+#include "IncomingCallState.hpp"
+#include "NotConnectedState.hpp"
 #include "Utils/todo.h"
+
+#include <format>
 
 namespace ue
 {
@@ -11,7 +15,7 @@ DiallingState::DiallingState(Context& context) : BaseState(context, "DiallingSta
     this->context.user.showCallComp();
 };
 
-void DiallingState::handleUiAction(std::optional<std::size_t> selectedIndex)
+void DiallingState::handleUiAction([[maybe_unused]] std::optional<std::size_t> selectedIndex)
 {
     logger.logInfo("DiallingState: User tapped Call");
 
@@ -19,12 +23,12 @@ void DiallingState::handleUiAction(std::optional<std::size_t> selectedIndex)
 
     if (!this->validateCallNumber())
     {
-        logger.logInfo("DiallingState: invalid recipient (", number_to_call, ")");
+        logger.logInfo(std::format("DiallingState: invalid recipient ({:0>3d})", number_to_call.value));
         context.user.showNotify("Error", "Invalid recipient");
         return;
     }
 
-    logger.logInfo("DiallingState: trying to call (", number_to_call, ")");
+    logger.logInfo(std::format("DiallingState: trying to call ({:0>3d})", number_to_call.value));
     this->context.setState<OutgoingDiallingState>(number_to_call);
 }
 
@@ -34,10 +38,36 @@ void DiallingState::handleUiBack()
     this->context.setState<ConnectedState>();
 }
 
+void DiallingState::handleMessageReceive(common::PhoneNumber from, std::string text)
+{
+    this->logger.logDebug("4.2.7.3 UE receives SMS, while sending Call Request");
+
+    logger.logInfo("DiallingState: incoming SMS from ", from);
+    context.smsStorage.addMessage(from, text);
+}
+
+void DiallingState::handleCallRequest(common::PhoneNumber from)
+{
+    this->logger.logDebug("4.2.7.4 UE receives Call Request, while sending Call Request");
+    this->logger.logInfo(std::format("Call request from number: {:0>3}, dropping call composing", from.value));
+
+    this->context.setState<IncomingCallState>(from);
+}
+
+void DiallingState::handleDisconnected()
+{
+    this->logger.logDebug("4.2.7.2 UE connection to BTS was dropped while sending Call Request");
+
+    this->logger.logError("Unexpectedly disconnected from BTS");
+    this->context.timer.stopTimer();
+    this->context.setState<NotConnectedState>();
+}
+
 constexpr bool DiallingState::validateCallNumber() const noexcept
 {
     return this->context.user.getCallRecipient().isValid();
 }
+
 
 }
 
@@ -53,9 +83,23 @@ OutgoingDiallingState::OutgoingDiallingState(Context& context, common::PhoneNumb
     this->context.user.showCallInProgress(this->number_to_call);
 }
 
+OutgoingDiallingState::~OutgoingDiallingState()
+{
+    this->context.timer.stopTimer();
+}
+
 void OutgoingDiallingState::handleUiAction(std::optional<std::size_t> selectedIndex)
 {
-    this->logger.logDebug("Accepting while calling does nothing - ignoring...");
+    if (!selectedIndex.has_value())
+    {
+        this->logger.logDebug("Accepting while calling does nothing - ignoring...");
+    }
+    else if (selectedIndex.value() == 1LU)
+    {
+        this->logger.logInfo("User accepted BTS sending UnknownRecipient");
+        this->context.timer.stopTimer();
+        this->context.setState<ConnectedState>();
+    }
 }
 
 void OutgoingDiallingState::handleUiBack()
@@ -75,24 +119,67 @@ void OutgoingDiallingState::handleTimeout()
 
 void OutgoingDiallingState::handleCallAccepted(common::PhoneNumber from)
 {
-    logger.logInfo("Successfully connected");
-    this->context.timer.stopTimer();
-    this->context.setState<TalkingState>(from);
+    if (this->number_to_call == from)
+    {
+        logger.logInfo("Successfully connected");
+        this->context.timer.stopTimer();
+        this->context.setState<TalkingState>(from);
+    }
+    else
+    {
+        logger.logDebug(std::format("Number [{:0>3}] tried to intercept a call with [{:0>3}]. Ignoring", from.value, this->number_to_call.value));
+    }
 }
 
 void OutgoingDiallingState::handleCallDropped(common::PhoneNumber from)
 {
-    logger.logInfo("Callee dropped the call");
-    this->context.timer.stopTimer();
-    this->context.setState<ConnectedState>();
+    if (this->number_to_call == from)
+    {
+        logger.logInfo("Callee dropped the call");
+        this->context.timer.stopTimer();
+        this->context.setState<ConnectedState>();
+    }
+    else
+    {
+        logger.logDebug(std::format("Number [{:0>3}] tried to remotely drop current call with [{:0>3}]. Ignoring", from.value, this->number_to_call.value));
+    }
 }
 
-void OutgoingDiallingState::handleUnknownRecipient(common::PhoneNumber from)
+void OutgoingDiallingState::handleUnknownRecipient([[maybe_unused]] common::PhoneNumber from)
 {
+    using namespace std::chrono_literals;
+
     logger.logInfo("Recipient not found");
     this->context.timer.stopTimer();
-    TODO(showPartnerNotAvailable)
-    this->context.setState<ConnectedState>();
+    this->context.timer.startTimer(5s);
+    this->context.user.showAlertPeerUnknownRecipient(this->number_to_call);
+}
+
+void OutgoingDiallingState::handleMessageReceive(common::PhoneNumber from, std::string text)
+{
+    this->logger.logDebug("4.2.7.3 UE receives SMS, while sending Call Request");
+
+    logger.logInfo("OutgoingDiallingState: incoming SMS from ", from);
+    context.smsStorage.addMessage(from, text);
+}
+
+void OutgoingDiallingState::handleCallRequest(common::PhoneNumber from)
+{
+    this->logger.logDebug("4.2.7.4 UE receives Call Request, while sending Call Request");
+    this->logger.logInfo(std::format("Call request from number: {:0>3}, dropping current call with {:0>3}", from.value, this->number_to_call.value));
+
+    this->context.timer.stopTimer();
+    this->context.bts.sendCallDropped(this->number_to_call);
+    this->context.setState<IncomingCallState>(from);
+}
+
+void OutgoingDiallingState::handleDisconnected()
+{
+    this->logger.logDebug("4.2.7.2 UE connection to BTS was dropped while sending Call Request");
+
+    this->logger.logError("Unexpectedly disconnected from BTS");
+    this->context.timer.stopTimer();
+    this->context.setState<NotConnectedState>();
 }
 
 }

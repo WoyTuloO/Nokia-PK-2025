@@ -35,12 +35,19 @@ public:
     // notify the user that the call has ended and why
     virtual void showEndedCall(const common::PhoneNumber& otherPhoneNumber, const std::string& reason) = 0; 
     virtual void showCallFailed(const common::PhoneNumber& otherPhoneNumber, const std::string& errorMessage) = 0;
+    virtual void showAlertPeerUnknownRecipient(const common::PhoneNumber& otherPhoneNumber) = 0;
 
     [[deprecated("There no longer exists Call submenu")]] virtual void showCallMenu() = 0;
 
-    virtual common::PhoneNumber getMessageRecipient() const = 0;
-    virtual std::string getMessageText() const = 0;
-    virtual common::PhoneNumber getCallRecipient() const = 0;
+    [[nodiscard]] virtual common::PhoneNumber getMessageRecipient() const = 0;
+    [[nodiscard]] virtual std::string getMessageText() const = 0;
+    [[nodiscard]] virtual common::PhoneNumber getCallRecipient() const = 0;
+
+    [[nodiscard]] virtual std::string getCallText() const = 0;
+    virtual void clearIncomingCallText() = 0;
+    virtual void clearOutgoingCallText() = 0;
+    virtual void appendCallText(std::string const& message) = 0;
+
 };
 
 }
