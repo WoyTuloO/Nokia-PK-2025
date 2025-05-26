@@ -2,9 +2,11 @@
 
 #include "BaseState.hpp"
 
-namespace ue{
+namespace ue
+{
 
-class NotConnectedState : public BaseState{
+class NotConnectedState : public BaseState
+{
 public:
     explicit NotConnectedState(Context& context);
     void handleSib(common::BtsId btsId) override;

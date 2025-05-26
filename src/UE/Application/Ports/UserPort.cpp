@@ -1,8 +1,8 @@
 #include "UserPort.hpp"
 #include "Traits/EnumTraits.hpp"
+#include "UeGui/IDialMode.hpp"
 #include "UeGui/IListViewMode.hpp"
 #include "UeGui/ITextMode.hpp"
-#include "UeGui/IDialMode.hpp"
 #include "Utils/todo.h"
 
 #include <format>
@@ -176,19 +176,20 @@ void UserPort::showCallFailed(const common::PhoneNumber &otherPhoneNumber, const
     logger.logInfo("Showing failed call with: ", otherPhoneNumber, " error: ", errorMessage);
 }
 
-void UserPort::showAlertPeerUnknownRecipient(const common::PhoneNumber& otherPhoneNumber)
+void UserPort::showAlertPeerUnknownRecipient(const common::PhoneNumber &otherPhoneNumber)
 {
     currentViewMode = view_mode::Call_alert_UR;
     logger.logInfo(std::format("BTS does not recognize this phone number: {:0>3d}", otherPhoneNumber.value));
 
-    auto& mode = this->gui.setAlertMode();
+    auto &mode = this->gui.setAlertMode();
 
     mode.setText(std::format("Unknown peer\n"
                              "[{:0>3d}]\n"
                              "\nPeer you tried"
                              "\nto call"
                              "\nprobably"
-                             "\ndisconnected", otherPhoneNumber.value));
+                             "\ndisconnected",
+                             otherPhoneNumber.value));
 }
 
 void UserPort::showCallMenu()
@@ -303,7 +304,7 @@ void UserPort::rejectCallback()
     {
         return;
     }
-    
+
     logger.logDebug("UI Action (Reject/Back), Mode: ", common::enumUnderlyingValue(currentViewMode));
 
     handler->handleUiBack();
@@ -339,10 +340,9 @@ void UserPort::clearOutgoingCallText()
     gui.setCallMode().clearOutgoingText();
 }
 
-void UserPort::appendCallText(std::string const& message)
+void UserPort::appendCallText(std::string const &message)
 {
     gui.setCallMode().appendIncomingText(message);
 }
-
 
 }

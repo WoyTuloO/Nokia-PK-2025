@@ -12,6 +12,7 @@ public:
     void handleMessageReceive(common::PhoneNumber from, std::string text) override;
     void handleCallRequest(common::PhoneNumber from) override;
     void handleDisconnected() override;
+
 private:
     [[nodiscard]] constexpr bool validateCallNumber() const noexcept;
 };
@@ -22,7 +23,7 @@ public:
     OutgoingDiallingState(Context& context, common::PhoneNumber to);
     ~OutgoingDiallingState() override;
     OutgoingDiallingState(OutgoingDiallingState const& o) = default;
-    OutgoingDiallingState& operator=(OutgoingDiallingState const& o) = default;
+    OutgoingDiallingState& operator= (OutgoingDiallingState const& o) = default;
 
     void handleUiAction(std::optional<std::size_t> selectedIndex) override;
     void handleUiBack() override;
@@ -33,6 +34,7 @@ public:
     void handleUnknownRecipient(common::PhoneNumber from) override;
     void handleMessageReceive(common::PhoneNumber from, std::string text) override;
     void handleDisconnected() override;
+
 private:
     common::PhoneNumber number_to_call;
 };

@@ -3,9 +3,11 @@
 #include "BaseState.hpp"
 #include <optional>
 
-namespace ue {
+namespace ue
+{
 
-class ViewSmsState : public BaseState {
+class ViewSmsState : public BaseState
+{
 public:
     ViewSmsState(Context& context, std::size_t smsIndex);
 
@@ -17,7 +19,7 @@ public:
 
 private:
     std::size_t smsIndex_;
-    
+
     void displayCurrentSms();
     void returnToSmsList();
 };

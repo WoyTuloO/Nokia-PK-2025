@@ -1,8 +1,8 @@
 #include "CallState.hpp"
 #include "ConnectedState.hpp"
-#include "TalkingState.hpp"
 #include "IncomingCallState.hpp"
 #include "NotConnectedState.hpp"
+#include "TalkingState.hpp"
 #include "Utils/todo.h"
 
 #include <format>
@@ -68,12 +68,12 @@ constexpr bool DiallingState::validateCallNumber() const noexcept
     return this->context.user.getCallRecipient().isValid();
 }
 
-
 }
 
 namespace ue
 {
-OutgoingDiallingState::OutgoingDiallingState(Context& context, common::PhoneNumber to) : BaseState(context, "DiallingState"), number_to_call{to}
+OutgoingDiallingState::OutgoingDiallingState(Context& context, common::PhoneNumber to)
+    : BaseState(context, "DiallingState"), number_to_call{ to }
 {
     using namespace std::literals::chrono_literals;
 
@@ -127,7 +127,9 @@ void OutgoingDiallingState::handleCallAccepted(common::PhoneNumber from)
     }
     else
     {
-        logger.logDebug(std::format("Number [{:0>3}] tried to intercept a call with [{:0>3}]. Ignoring", from.value, this->number_to_call.value));
+        logger.logDebug(std::format("Number [{:0>3}] tried to intercept a call with [{:0>3}]. Ignoring",
+                                    from.value,
+                                    this->number_to_call.value));
     }
 }
 
@@ -141,7 +143,9 @@ void OutgoingDiallingState::handleCallDropped(common::PhoneNumber from)
     }
     else
     {
-        logger.logDebug(std::format("Number [{:0>3}] tried to remotely drop current call with [{:0>3}]. Ignoring", from.value, this->number_to_call.value));
+        logger.logDebug(std::format("Number [{:0>3}] tried to remotely drop current call with [{:0>3}]. Ignoring",
+                                    from.value,
+                                    this->number_to_call.value));
     }
 }
 
@@ -166,7 +170,8 @@ void OutgoingDiallingState::handleMessageReceive(common::PhoneNumber from, std::
 void OutgoingDiallingState::handleCallRequest(common::PhoneNumber from)
 {
     this->logger.logDebug("4.2.7.4 UE receives Call Request, while sending Call Request");
-    this->logger.logInfo(std::format("Call request from number: {:0>3}, dropping current call with {:0>3}", from.value, this->number_to_call.value));
+    this->logger.logInfo(std::format(
+        "Call request from number: {:0>3}, dropping current call with {:0>3}", from.value, this->number_to_call.value));
 
     this->context.timer.stopTimer();
     this->context.bts.sendCallDropped(this->number_to_call);

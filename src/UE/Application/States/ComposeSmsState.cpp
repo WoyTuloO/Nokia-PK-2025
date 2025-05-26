@@ -1,12 +1,12 @@
 #include "ComposeSmsState.hpp"
 #include "ConnectedState.hpp"
-#include "NotConnectedState.hpp"
 #include "IncomingCallState.hpp"
+#include "NotConnectedState.hpp"
 
-namespace ue {
+namespace ue
+{
 
-ComposeSmsState::ComposeSmsState(Context& ctx)
-    : BaseState(ctx, "ComposeSmsState")
+ComposeSmsState::ComposeSmsState(Context& ctx) : BaseState(ctx, "ComposeSmsState")
 {
     logger.logInfo("ComposeSmsState: entering SMS composition");
     context.user.showMessageComp();
@@ -21,9 +21,10 @@ void ComposeSmsState::handleUiAction([[maybe_unused]] std::optional<std::size_t>
 void ComposeSmsState::validateAndSendSms()
 {
     const auto recipient = context.user.getMessageRecipient();
-    const auto body      = context.user.getMessageText();
+    const auto body = context.user.getMessageText();
 
-    if (!inputsAreValid(recipient, body)) {
+    if (!inputsAreValid(recipient, body))
+    {
         logger.logInfo("ComposeSmsState: invalid recipient or empty text");
         context.user.showNotify("Error", "Invalid recipient or empty message");
         return;
@@ -36,8 +37,7 @@ void ComposeSmsState::validateAndSendSms()
     context.setState<ConnectedState>();
 }
 
-bool ComposeSmsState::inputsAreValid(const common::PhoneNumber& recipient,
-                                     const std::string& body) const
+bool ComposeSmsState::inputsAreValid(const common::PhoneNumber& recipient, const std::string& body) const
 {
     return recipient.isValid() && !body.empty();
 }
@@ -51,8 +51,7 @@ void ComposeSmsState::handleUiBack()
 void ComposeSmsState::handleDisconnected()
 {
     logger.logInfo("ComposeSmsState: lost connection mid-compose");
-    context.user.showNotify("Disconnected",
-        "Connection lost during SMS composition.");
+    context.user.showNotify("Disconnected", "Connection lost during SMS composition.");
     context.setState<NotConnectedState>();
 }
 

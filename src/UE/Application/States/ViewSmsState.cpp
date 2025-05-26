@@ -1,16 +1,16 @@
 #include "ViewSmsState.hpp"
-#include "ViewListSmsState.hpp"
-#include "NotConnectedState.hpp"
 #include "IncomingCallState.hpp"
+#include "NotConnectedState.hpp"
+#include "ViewListSmsState.hpp"
 
-namespace ue {
+namespace ue
+{
 
-ViewSmsState::ViewSmsState(Context& ctx, std::size_t smsIndex)
-    : BaseState(ctx, "ViewSmsState")
-    , smsIndex_(smsIndex)
+ViewSmsState::ViewSmsState(Context& ctx, std::size_t smsIndex) : BaseState(ctx, "ViewSmsState"), smsIndex_(smsIndex)
 {
     const auto& inbox = context.smsStorage.getAllMessages();
-    if (smsIndex_ >= inbox.size()) {
+    if (smsIndex_ >= inbox.size())
+    {
         logger.logError("Invalid SMS index: ", smsIndex_);
         returnToSmsList();
         return;
@@ -18,8 +18,7 @@ ViewSmsState::ViewSmsState(Context& ctx, std::size_t smsIndex)
 
     const auto& msg = inbox[smsIndex_];
     logger.logInfo("Opening SMS #", smsIndex_, " from ", msg.sender);
-    if (msg.direction == SmsMessage::Dir::in
-        && msg.status == SmsMessage::Status::receiveUR)
+    if (msg.direction == SmsMessage::Dir::in && msg.status == SmsMessage::Status::receiveUR)
     {
         logger.logDebug("Marking as read SMS #", smsIndex_);
         context.smsStorage.markAsRead(smsIndex_);

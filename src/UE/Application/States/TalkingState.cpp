@@ -25,7 +25,7 @@ TalkingState::~TalkingState()
      * that stops its timer, such that derived classes don't have to care about
      * resetting it. BUT, because I don't know whether there is
      * some miscellaneous interaction that needs to pass timer between
-     * states it will be done this way. 
+     * states it will be done this way.
      */
     this->context.timer.stopTimer();
 }
@@ -44,7 +44,8 @@ void TalkingState::handleUiAction(std::optional<std::size_t> selectedIndex)
             this->context.user.appendCallText(std::format("[ME]: {:s}", user_mesg));
             this->context.bts.sendCallTalk(this->to, user_mesg);
             this->context.user.clearOutgoingCallText();
-            this->logger.logDebug(std::format("Message: \"{:s}\" succesfully sent to recipient at [{:0>3d}]", user_mesg, this->to.value));
+            this->logger.logDebug(
+                std::format("Message: \"{:s}\" succesfully sent to recipient at [{:0>3d}]", user_mesg, this->to.value));
         }
         else
         {
@@ -64,13 +65,17 @@ void TalkingState::handleCallTalk(common::PhoneNumber to, const std::string& tex
     if (this->to == to)
     {
         this->resetTimer();
-    
+
         this->context.user.appendCallText(std::format("[{:0>3d}]: {:s}", this->to.value, text));
-        this->logger.logDebug(std::format("Message: \"{:s}\" succesfully received from caller at {:0>3d}", text, this->to.value));
+        this->logger.logDebug(
+            std::format("Message: \"{:s}\" succesfully received from caller at {:0>3d}", text, this->to.value));
     }
     else
     {
-        logger.logDebug(std::format("Number [{:0>3}] tried to send unwanted message while in call with [{:0>3}]. Ignoring", to.value, this->to.value));
+        logger.logDebug(
+            std::format("Number [{:0>3}] tried to send unwanted message while in call with [{:0>3}]. Ignoring",
+                        to.value,
+                        this->to.value));
     }
 }
 
@@ -100,7 +105,8 @@ void TalkingState::handleCallDropped(common::PhoneNumber from)
     }
     else
     {
-        logger.logDebug(std::format("Number [{:0>3}] tried to remotely drop current call with [{:0>3}]. Ignoring", from.value, this->to.value));
+        logger.logDebug(std::format(
+            "Number [{:0>3}] tried to remotely drop current call with [{:0>3}]. Ignoring", from.value, this->to.value));
     }
 }
 
@@ -141,7 +147,7 @@ void TalkingState::handleDisconnected()
 void TalkingState::endCall()
 {
     logger.logInfo("Ending call with: ", to);
-    
+
     this->context.timer.stopTimer();
     context.bts.sendCallDropped(to);
     context.user.showEndedCall(to, "Call ended");
@@ -150,7 +156,7 @@ void TalkingState::endCall()
 
 void TalkingState::resetTimer(ue::ITimerPort::Duration inactivity_duration)
 {
-    logger.logDebug(std::format("Activity detected, resetting timer to {}", 
+    logger.logDebug(std::format("Activity detected, resetting timer to {}",
                                 std::chrono::duration_cast<std::chrono::seconds>(inactivity_duration)));
 
     this->context.timer.stopTimer();

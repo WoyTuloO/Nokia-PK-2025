@@ -6,8 +6,8 @@
 #include "Logger/PrefixedLogger.hpp"
 #include "Messages/PhoneNumber.hpp"
 #include "SmsStorage.hpp"
-#include "UeGui/ISmsComposeMode.hpp"
 #include "UeGui/ICallMode.hpp"
+#include "UeGui/ISmsComposeMode.hpp"
 #include <optional>
 #include <vector>
 
@@ -51,7 +51,6 @@ public:
     void clearOutgoingCallText() override;
     void appendCallText(std::string const& message) override;
 
-
 private:
     void acceptCallback();
     void rejectCallback();
@@ -63,7 +62,7 @@ private:
     IUeGui& gui;
     common::PhoneNumber phoneNumber;
     IEventsHandler* handler = nullptr;
-    view_details::GuiViewMode currentViewMode { view_details::GuiViewMode::Default };
+    view_details::GuiViewMode currentViewMode{ view_details::GuiViewMode::Default };
 };
 
 }
