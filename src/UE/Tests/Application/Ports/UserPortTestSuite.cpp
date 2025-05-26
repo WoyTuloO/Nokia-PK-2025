@@ -55,6 +55,7 @@ protected:
 	    EXPECT_CALL(listViewModeMock, clearSelectionList());
 	    EXPECT_CALL(listViewModeMock, addSelectionListItem("Compose SMS", ""));
 	    EXPECT_CALL(listViewModeMock, addSelectionListItem("View SMS", ""));
+	    EXPECT_CALL(listViewModeMock, addSelectionListItem("Call", ""));
 	    EXPECT_CALL(guiMock, showConnected());
 	    objectUnderTest.showConnected();
 	}
