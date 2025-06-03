@@ -1,7 +1,9 @@
+// NOLINTBEGIN
 #include "BtsPort.hpp"
 #include "Messages/IncomingMessage.hpp"
 #include "Messages/OutgoingMessage.hpp"
 #include "Utils/todo.h"
+// NOLINTEND
 
 // Disturbing comment
 
