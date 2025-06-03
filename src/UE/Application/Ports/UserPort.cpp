@@ -8,6 +8,8 @@
 #include <format>
 #include <string>
 
+// Disturbing comment
+
 namespace ue
 {
 using view_mode = view_details::GuiViewMode;
