@@ -72,6 +72,7 @@ jobs:
            src/BTS|
            src/COMMON|
           !src/COMMON/Utils|
+           src/UE/../COMMON|
            src/googletest|
            src/lib
           "
